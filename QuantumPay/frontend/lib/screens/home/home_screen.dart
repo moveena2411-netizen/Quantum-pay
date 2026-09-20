@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../services/api_service.dart';
-import '../payment/send_money_screen.dart';
-import '../payment/receive_money_screen.dart';
 import '../history/history_screen.dart';
+import '../payment/send_money_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int userId;
@@ -23,173 +22,93 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // ---------------------------------------------------------
-  // BALANCE
-  // ---------------------------------------------------------
-
   double _balance = 0.0;
-
-  bool _isLoadingBalance = true;
   bool _balanceVisible = false;
+  bool _showPinPanel = false;
+  bool _isVerifyingPin = false;
 
-  // ---------------------------------------------------------
-  // PASSWORD PANEL
-  // ---------------------------------------------------------
-
-  bool _showPasswordPanel = false;
-
-  final TextEditingController _passwordController =
+  final TextEditingController _pinController =
       TextEditingController();
 
-  bool _obscurePassword = true;
-
-  String? _passwordError;
-
-  // ---------------------------------------------------------
-  // INIT
-  // ---------------------------------------------------------
-
-  @override
-  void initState() {
-    super.initState();
-
-    _loadBalance();
-  }
-
-  // ---------------------------------------------------------
-  // DISPOSE
-  // ---------------------------------------------------------
+  String? _pinError;
 
   @override
   void dispose() {
-    _passwordController.dispose();
-
+    _pinController.dispose();
     super.dispose();
   }
 
-  // ---------------------------------------------------------
-  // LOAD BALANCE FROM BACKEND
-  // ---------------------------------------------------------
-
-  Future<void> _loadBalance() async {
-    try {
-      final data = await ApiService.getWallet(
-        widget.userId,
-      );
-
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _balance = (data['balance'] as num).toDouble();
-        _isLoadingBalance = false;
-      });
-    } catch (e) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _isLoadingBalance = false;
-      });
-
-      _showMessage(
-        'Cannot connect to QuantumPay server',
-      );
-    }
-  }
-
-  // ---------------------------------------------------------
-  // REFRESH BALANCE
-  // ---------------------------------------------------------
-
-  Future<void> _refreshBalance() async {
+  void _openPinPanel() {
     setState(() {
-      _isLoadingBalance = true;
-    });
-
-    await _loadBalance();
-  }
-
-  // ---------------------------------------------------------
-  // OPEN PASSWORD PANEL
-  // ---------------------------------------------------------
-
-  void _openPasswordPanel() {
-    setState(() {
-      _showPasswordPanel = true;
-      _passwordError = null;
-      _passwordController.clear();
+      _showPinPanel = true;
+      _pinError = null;
+      _pinController.clear();
     });
   }
 
-  // ---------------------------------------------------------
-  // CLOSE PASSWORD PANEL
-  // ---------------------------------------------------------
-
-  void _closePasswordPanel() {
+  void _closePinPanel() {
     FocusScope.of(context).unfocus();
 
     setState(() {
-      _showPasswordPanel = false;
-      _passwordError = null;
-      _passwordController.clear();
+      _showPinPanel = false;
+      _pinError = null;
+      _pinController.clear();
     });
   }
 
-  // ---------------------------------------------------------
-  // VERIFY PASSWORD AND SHOW BALANCE
-  // ---------------------------------------------------------
+  Future<void> _verifyPinAndShowBalance() async {
+    final pin = _pinController.text.trim();
 
-  Future<void> _unlockBalance() async {
-    final password = _passwordController.text.trim();
-
-    if (password.isEmpty) {
+    if (!RegExp(r'^\d{6}$').hasMatch(pin)) {
       setState(() {
-        _passwordError = 'Please enter your password';
+        _pinError = 'Enter exactly 6 digits';
       });
-
       return;
     }
 
+    setState(() {
+      _isVerifyingPin = true;
+      _pinError = null;
+    });
+
     try {
-      // Verify the actual logged-in user's password
-      await ApiService.login(
-        widget.userEmail,
-        password,
+      final result = await ApiService.getBalanceWithPin(
+        userId: widget.userId,
+        paymentPin: pin,
       );
 
       if (!mounted) {
         return;
       }
 
-      FocusScope.of(context).unfocus();
+      final balanceValue = result['balance'];
 
       setState(() {
+        _balance = (balanceValue as num).toDouble();
         _balanceVisible = true;
-        _showPasswordPanel = false;
-        _passwordError = null;
-        _passwordController.clear();
+        _showPinPanel = false;
+        _isVerifyingPin = false;
+        _pinController.clear();
       });
 
-      _showMessage(
-        'Balance unlocked',
-      );
+      FocusScope.of(context).unfocus();
     } catch (e) {
       if (!mounted) {
         return;
       }
 
+      String message = e.toString();
+
+      if (message.startsWith('Exception: ')) {
+        message = message.substring(11);
+      }
+
       setState(() {
-        _passwordError = 'Incorrect password';
+        _isVerifyingPin = false;
+        _pinError = message;
       });
     }
   }
-
-  // ---------------------------------------------------------
-  // HIDE BALANCE
-  // ---------------------------------------------------------
 
   void _hideBalance() {
     setState(() {
@@ -197,9 +116,39 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // ---------------------------------------------------------
-  // MESSAGE
-  // ---------------------------------------------------------
+  Future<void> _openHistory() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HistoryScreen(
+          userId: widget.userId,
+          userEmail: widget.userEmail,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openSendMoney() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SendMoneyScreen(
+          userId: widget.userId,
+          userEmail: widget.userEmail,
+        ),
+      ),
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _balanceVisible = false;
+      _showPinPanel = false;
+      _pinController.clear();
+    });
+  }
 
   void _showMessage(String message) {
     if (!mounted) {
@@ -209,145 +158,44 @@ class _HomeScreenState extends State<HomeScreen> {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
+      SnackBar(content: Text(message)),
     );
   }
-
-  // ---------------------------------------------------------
-  // FORMAT BALANCE
-  // ---------------------------------------------------------
 
   String _formattedBalance() {
     return '₹ ${_balance.toStringAsFixed(2)}';
   }
 
-  // ---------------------------------------------------------
-  // OPEN SEND MONEY
-  // ---------------------------------------------------------
-
-  Future<void> _openSendMoney() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SendMoneyScreen(
-          userId: widget.userId,
-          userEmail: widget.userEmail,
-        ),
-      ),
-    );
-
-    // Always hide balance after returning
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _balanceVisible = false;
-    });
-
-    // Refresh only when a transaction was completed
-    if (result == true) {
-      await _refreshBalance();
-    }
-  }
-
-  // ---------------------------------------------------------
-  // OPEN RECEIVE MONEY
-  // ---------------------------------------------------------
-
-  Future<void> _openReceiveMoney() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ReceiveMoneyScreen(
-          userId: widget.userId,
-        ),
-      ),
-    );
-
-    // Always hide balance after returning
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _balanceVisible = false;
-    });
-
-    // Refresh only when a transaction was completed
-    if (result == true) {
-      await _refreshBalance();
-    }
-  }
-
-  // ---------------------------------------------------------
-  // OPEN HISTORY
-  // ---------------------------------------------------------
-
-  Future<void> _openHistory() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HistoryScreen(
-          userId: widget.userId,
-        ),
-      ),
-    );
-
-    // Keep balance hidden when returning
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _balanceVisible = false;
-    });
-  }
-
-  // ---------------------------------------------------------
-  // BUILD
-  // ---------------------------------------------------------
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'QuantumPay',
-        ),
+        title: const Text('QuantumPay'),
         actions: [
           IconButton(
-            tooltip: 'Refresh Balance',
-            onPressed: _refreshBalance,
-            icon: const Icon(
-              Icons.refresh,
-            ),
+            tooltip: 'Refresh',
+            onPressed: () {
+              setState(() {
+                _balanceVisible = false;
+              });
+              _showMessage('Balance is hidden. Enter PIN to view it.');
+            },
+            icon: const Icon(Icons.refresh),
           ),
         ],
       ),
-
-      // -------------------------------------------------------
-      // BODY
-      // -------------------------------------------------------
-
       body: RefreshIndicator(
-        onRefresh: _refreshBalance,
-
+        onRefresh: () async {
+          setState(() {
+            _balanceVisible = false;
+          });
+        },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-
           padding: const EdgeInsets.all(20),
-
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-
             children: [
-              // =================================================
-              // GREETING
-              // =================================================
-
               Text(
                 'Hello, ${widget.userName} 👋',
                 style: const TextStyle(
@@ -369,40 +217,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 25),
 
-              // =================================================
-              // BALANCE CARD
-              // =================================================
-
               Container(
                 width: double.infinity,
-
                 padding: const EdgeInsets.all(24),
-
                 decoration: BoxDecoration(
                   color: AppColors.primary,
-
                   borderRadius: BorderRadius.circular(22),
-
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(
-                        alpha: 0.08,
-                      ),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 12,
                       offset: const Offset(0, 5),
                     ),
                   ],
                 ),
-
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // -----------------------------
-                    // BALANCE TITLE
-                    // -----------------------------
-
                     Row(
                       children: [
                         const Expanded(
@@ -414,19 +245,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-
                         IconButton(
                           onPressed: _balanceVisible
                               ? _hideBalance
-                              : _openPasswordPanel,
-
+                              : _openPinPanel,
                           icon: Icon(
                             _balanceVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-
                             color: Colors.white,
-
                             size: 25,
                           ),
                         ),
@@ -435,49 +262,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     const SizedBox(height: 5),
 
-                    // -----------------------------
-                    // BALANCE
-                    // -----------------------------
-
-                    if (_isLoadingBalance)
-                      const SizedBox(
-                        height: 42,
-
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-
-                          child: SizedBox(
-                            width: 25,
-                            height: 25,
-
-                            child:
-                                CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.5,
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      Text(
-                        _balanceVisible
-                            ? _formattedBalance()
-                            : '₹ ••••••••',
-
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    Text(
+                      _balanceVisible
+                          ? _formattedBalance()
+                          : '₹ ••••••••',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
 
                     const SizedBox(height: 8),
 
                     Text(
                       _balanceVisible
                           ? 'Tap the eye icon to hide'
-                          : 'Password required to view balance',
-
+                          : '6-digit Payment PIN required',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12,
@@ -489,47 +290,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 15),
 
-              // =================================================
-              // PASSWORD PANEL
-              // =================================================
-
-              if (_showPasswordPanel)
+              if (_showPinPanel)
                 Container(
                   width: double.infinity,
-
                   padding: const EdgeInsets.all(20),
-
                   decoration: BoxDecoration(
                     color: Colors.white,
-
-                    borderRadius:
-                        BorderRadius.circular(18),
-
+                    borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: AppColors.primary.withValues(
-                        alpha: 0.2,
-                      ),
+                      color: AppColors.primary.withValues(alpha: 0.2),
                     ),
-
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(
-                          alpha: 0.06,
-                        ),
+                        color: Colors.black.withValues(alpha: 0.06),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'Unlock Balance',
-
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -539,8 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 6),
 
                       const Text(
-                        'Enter your password to view your balance.',
-
+                        'Enter your 6-digit Payment PIN to view your balance.',
                         style: TextStyle(
                           fontSize: 13,
                           color: AppColors.textSecondary,
@@ -550,42 +332,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 16),
 
                       TextField(
-                        controller: _passwordController,
-
-                        obscureText: _obscurePassword,
-
-                        keyboardType:
-                            TextInputType.number,
-
+                        controller: _pinController,
+                        obscureText: true,
+                        keyboardType: TextInputType.number,
+                        maxLength: 6,
                         decoration: InputDecoration(
-                          labelText: 'Password',
-
-                          prefixIcon:
-                              const Icon(
-                            Icons.lock_outline,
-                          ),
-
-                          errorText: _passwordError,
-
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword =
-                                    !_obscurePassword;
-                              });
-                            },
-
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                          ),
+                          labelText: 'Payment PIN',
+                          prefixIcon: const Icon(Icons.pin_outlined),
+                          errorText: _pinError,
+                          counterText: '',
+                          border: const OutlineInputBorder(),
                         ),
-
-                        onSubmitted: (_) {
-                          _unlockBalance();
-                        },
+                        onSubmitted: (_) =>
+                            _verifyPinAndShowBalance(),
                       ),
 
                       const SizedBox(height: 16),
@@ -594,13 +353,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Expanded(
                             child: OutlinedButton(
-                              onPressed:
-                                  _closePasswordPanel,
-
-                              child:
-                                  const Text(
-                                'Cancel',
-                              ),
+                              onPressed: _isVerifyingPin
+                                  ? null
+                                  : _closePinPanel,
+                              child: const Text('Cancel'),
                             ),
                           ),
 
@@ -608,13 +364,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           Expanded(
                             child: ElevatedButton(
-                              onPressed:
-                                  _unlockBalance,
-
-                              child:
-                                  const Text(
-                                'Unlock',
-                              ),
+                              onPressed: _isVerifyingPin
+                                  ? null
+                                  : _verifyPinAndShowBalance,
+                              child: _isVerifyingPin
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child:
+                                          CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Text('Unlock'),
                             ),
                           ),
                         ],
@@ -625,13 +388,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 30),
 
-              // =================================================
-              // QUICK ACTIONS
-              // =================================================
-
               const Text(
                 'Quick Actions',
-
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -644,32 +402,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment:
                     MainAxisAlignment.spaceAround,
-
                 children: [
-                  // -----------------------------
-                  // SEND
-                  // -----------------------------
-
                   _ActionButton(
                     icon: Icons.send,
                     title: 'Send',
                     onTap: _openSendMoney,
                   ),
-
-                  // -----------------------------
-                  // RECEIVE
-                  // -----------------------------
-
-                  _ActionButton(
-                    icon: Icons.call_received,
-                    title: 'Receive',
-                    onTap: _openReceiveMoney,
-                  ),
-
-                  // -----------------------------
-                  // HISTORY
-                  // -----------------------------
-
                   _ActionButton(
                     icon: Icons.history,
                     title: 'History',
@@ -680,13 +418,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 35),
 
-              // =================================================
-              // ACCOUNT INFORMATION
-              // =================================================
-
               const Text(
                 'Account',
-
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -697,29 +430,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
               Container(
                 width: double.infinity,
-
                 padding: const EdgeInsets.all(18),
-
                 decoration: BoxDecoration(
                   color: Colors.white,
-
-                  borderRadius:
-                      BorderRadius.circular(18),
-
+                  borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(
-                        alpha: 0.05,
-                      ),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-
                 child: Column(
                   children: [
-                    // NAME
                     _AccountRow(
                       icon: Icons.person_outline,
                       title: 'Name',
@@ -728,7 +452,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     const Divider(),
 
-                    // EMAIL
                     _AccountRow(
                       icon: Icons.email_outlined,
                       title: 'Email',
@@ -740,27 +463,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 30),
 
-              // =================================================
-              // BACKEND STATUS
-              // =================================================
-
-              Center(
+              const Center(
                 child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-
-                  children: const [
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     Icon(
                       Icons.cloud_done,
                       size: 16,
                       color: Colors.green,
                     ),
-
                     SizedBox(width: 6),
-
                     Text(
                       'QuantumPay Backend Connected',
-
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.green,
@@ -779,10 +493,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// =============================================================
-// ACTION BUTTON
-// =============================================================
-
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -798,44 +508,32 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-
       borderRadius: BorderRadius.circular(16),
-
       child: Column(
         children: [
           Container(
-            width: 65,
-            height: 65,
-
+            width: 70,
+            height: 70,
             decoration: BoxDecoration(
               color: AppColors.white,
-
-              borderRadius:
-                  BorderRadius.circular(16),
-
+              borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(
-                    alpha: 0.05,
-                  ),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 3),
                 ),
               ],
             ),
-
             child: Icon(
               icon,
               color: AppColors.primary,
-              size: 28,
+              size: 30,
             ),
           ),
-
           const SizedBox(height: 8),
-
           Text(
             title,
-
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -846,10 +544,6 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
-
-// =============================================================
-// ACCOUNT ROW
-// =============================================================
 
 class _AccountRow extends StatelessWidget {
   final IconData icon;
@@ -865,10 +559,7 @@ class _AccountRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 8,
-      ),
-
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Icon(
@@ -876,29 +567,22 @@ class _AccountRow extends StatelessWidget {
             color: AppColors.primary,
             size: 22,
           ),
-
           const SizedBox(width: 14),
-
           Expanded(
             child: Column(
               crossAxisAlignment:
                   CrossAxisAlignment.start,
-
               children: [
                 Text(
                   title,
-
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
                 ),
-
                 const SizedBox(height: 3),
-
                 Text(
                   value,
-
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

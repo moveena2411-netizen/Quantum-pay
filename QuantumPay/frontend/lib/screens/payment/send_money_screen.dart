@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../services/api_service.dart';
-import 'transaction_result_screen.dart';
 
 class SendMoneyScreen extends StatefulWidget {
   final int userId;
@@ -24,36 +23,35 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   final TextEditingController _amountController =
       TextEditingController();
 
-  final TextEditingController _passwordController =
+  final TextEditingController _paymentPinController =
       TextEditingController();
 
-  bool _obscurePassword = true;
+  bool _obscurePaymentPin = true;
   bool _isSending = false;
 
   @override
   void dispose() {
     _receiverController.dispose();
     _amountController.dispose();
-    _passwordController.dispose();
+    _paymentPinController.dispose();
     super.dispose();
   }
-
-  // =========================================================
-  // SEND MONEY
-  // =========================================================
 
   Future<void> _sendMoney() async {
     final receiver = _receiverController.text.trim();
     final amountText = _amountController.text.trim();
-    final password = _passwordController.text;
+    final paymentPin = _paymentPinController.text.trim();
 
-    // Validate receiver
     if (receiver.isEmpty) {
       _showMessage('Please enter receiver email or phone');
       return;
     }
 
-    // Validate amount
+    if (receiver.toLowerCase() == widget.userEmail.toLowerCase()) {
+      _showMessage('You cannot send money to yourself');
+      return;
+    }
+
     final amount = double.tryParse(amountText);
 
     if (amount == null || amount <= 0) {
@@ -61,15 +59,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       return;
     }
 
-    // Prevent sending to yourself
-    if (receiver.toLowerCase() == widget.userEmail.toLowerCase()) {
-      _showMessage('You cannot send money to yourself');
-      return;
-    }
-
-    // Validate password
-    if (password.isEmpty) {
-      _showMessage('Please enter your password');
+    if (!RegExp(r'^\d{6}$').hasMatch(paymentPin)) {
+      _showMessage('Payment PIN must contain exactly 6 digits');
       return;
     }
 
@@ -78,23 +69,11 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     });
 
     try {
-      // =======================================================
-      // STEP 1: VERIFY PASSWORD
-      // =======================================================
-
-      await ApiService.login(
-        widget.userEmail,
-        password,
-      );
-
-      // =======================================================
-      // STEP 2: SEND MONEY THROUGH BACKEND
-      // =======================================================
-
       final result = await ApiService.sendMoney(
         senderId: widget.userId,
         receiver: receiver,
         amount: amount,
+        paymentPin: paymentPin,
       );
 
       if (!mounted) {
@@ -105,25 +84,9 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         _isSending = false;
       });
 
-      // =======================================================
-      // STEP 3: OPEN TRANSACTION RESULT PAGE
-      // =======================================================
-
-      final String actualReceiver =
-          result['receiver']?.toString() ?? receiver;
-
-      final DateTime transactionDate = DateTime.now();
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TransactionResultScreen(
-            userId: widget.userId,
-            receiver: actualReceiver,
-            amount: amount,
-            transactionDate: transactionDate,
-          ),
-        ),
+      _showSuccessDialog(
+        result['receiver']?.toString() ?? receiver,
+        amount,
       );
     } catch (e) {
       if (!mounted) {
@@ -144,24 +107,46 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     }
   }
 
-  // =========================================================
-  // ERROR / MESSAGE
-  // =========================================================
-
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-      ),
+  void _showSuccessDialog(String receiver, double amount) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(
+                Icons.check_circle,
+                color: Colors.green,
+              ),
+              SizedBox(width: 10),
+              Text('Payment Successful'),
+            ],
+          ),
+          content: Text(
+            '₹${amount.toStringAsFixed(2)} sent successfully to $receiver.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                Navigator.of(context).pop(true);
+              },
+              child: const Text('Done'),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  // =========================================================
-  // UI
-  // =========================================================
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,27 +166,18 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 8),
-
             const Text(
               'Transfer money securely to another QuantumPay user.',
               style: TextStyle(
                 color: Colors.grey,
-                fontSize: 15,
               ),
             ),
-
             const SizedBox(height: 30),
-
-            // =================================================
-            // RECEIVER
-            // =================================================
 
             TextField(
               controller: _receiverController,
               keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
               decoration: const InputDecoration(
                 labelText: 'Receiver Email / Phone',
                 hintText: 'example@gmail.com',
@@ -212,16 +188,11 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
             const SizedBox(height: 18),
 
-            // =================================================
-            // AMOUNT
-            // =================================================
-
             TextField(
               controller: _amountController,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              textInputAction: TextInputAction.next,
               decoration: const InputDecoration(
                 labelText: 'Amount',
                 hintText: 'Enter amount',
@@ -232,44 +203,43 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
             const SizedBox(height: 18),
 
-            // =================================================
-            // PASSWORD
-            // =================================================
-
             TextField(
-              controller: _passwordController,
-              obscureText: _obscurePassword,
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) {
-                if (!_isSending) {
-                  _sendMoney();
-                }
-              },
+              controller: _paymentPinController,
+              obscureText: _obscurePaymentPin,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
               decoration: InputDecoration(
-                labelText: 'Password',
-                hintText: 'Enter your password',
-                prefixIcon: const Icon(Icons.lock),
+                labelText: 'Payment PIN',
+                hintText: 'Enter 6-digit Payment PIN',
+                prefixIcon: const Icon(Icons.pin_outlined),
+                counterText: '',
                 suffixIcon: IconButton(
                   onPressed: () {
                     setState(() {
-                      _obscurePassword = !_obscurePassword;
+                      _obscurePaymentPin = !_obscurePaymentPin;
                     });
                   },
                   icon: Icon(
-                    _obscurePassword
-                        ? Icons.visibility
-                        : Icons.visibility_off,
+                    _obscurePaymentPin
+                        ? Icons.visibility_off
+                        : Icons.visibility,
                   ),
                 ),
                 border: const OutlineInputBorder(),
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 8),
 
-            // =================================================
-            // SEND BUTTON
-            // =================================================
+            const Text(
+              'This is the same 6-digit PIN used to view your balance.',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+              ),
+            ),
+
+            const SizedBox(height: 30),
 
             SizedBox(
               width: double.infinity,

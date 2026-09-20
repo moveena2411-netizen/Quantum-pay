@@ -28,12 +28,9 @@ class _ReceiveMoneyScreenState
     super.dispose();
   }
 
-  // =========================================================
-  // RECEIVE MONEY
-  // =========================================================
-
   Future<void> _receiveMoney() async {
     final amountText = _amountController.text.trim();
+
     final amount = double.tryParse(amountText);
 
     if (amount == null || amount <= 0) {
@@ -59,10 +56,22 @@ class _ReceiveMoneyScreenState
         _isReceiving = false;
       });
 
-      _showSuccessDialog(
-        amount,
-        result['balance'],
+      _amountController.clear();
+
+      _showMessage(
+        result['message']?.toString() ??
+            'Money received successfully',
       );
+
+      await Future.delayed(
+        const Duration(milliseconds: 800),
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) {
         return;
@@ -82,61 +91,16 @@ class _ReceiveMoneyScreenState
     }
   }
 
-  // =========================================================
-  // SUCCESS
-  // =========================================================
-
-  void _showSuccessDialog(
-    double amount,
-    dynamic newBalance,
-  ) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Row(
-            children: [
-              Icon(
-                Icons.check_circle,
-                color: Colors.green,
-              ),
-              SizedBox(width: 10),
-              Text('Money Received'),
-            ],
-          ),
-          content: Text(
-            '₹${amount.toStringAsFixed(2)} has been added to your wallet.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                Navigator.of(context).pop(true);
-              },
-              child: const Text('Done'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // =========================================================
-  // MESSAGE
-  // =========================================================
-
   void _showMessage(String message) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
-
-  // =========================================================
-  // UI
-  // =========================================================
 
   @override
   Widget build(BuildContext context) {
@@ -156,34 +120,37 @@ class _ReceiveMoneyScreenState
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 8),
-
             const Text(
               'Add money to your QuantumPay wallet.',
               style: TextStyle(
                 color: Colors.grey,
+                fontSize: 15,
               ),
             ),
-
             const SizedBox(height: 30),
-
             TextField(
               controller: _amountController,
               keyboardType:
                   const TextInputType.numberWithOptions(
                 decimal: true,
               ),
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) {
+                if (!_isReceiving) {
+                  _receiveMoney();
+                }
+              },
               decoration: const InputDecoration(
                 labelText: 'Amount',
                 hintText: 'Enter amount',
-                prefixIcon: Icon(Icons.currency_rupee),
+                prefixIcon: Icon(
+                  Icons.currency_rupee,
+                ),
                 border: OutlineInputBorder(),
               ),
             ),
-
             const SizedBox(height: 30),
-
             SizedBox(
               width: double.infinity,
               height: 52,

@@ -4,6 +4,7 @@ import '../history/history_screen.dart';
 
 class TransactionResultScreen extends StatefulWidget {
   final int userId;
+  final String userEmail;
   final String receiver;
   final double amount;
   final DateTime transactionDate;
@@ -11,6 +12,7 @@ class TransactionResultScreen extends StatefulWidget {
   const TransactionResultScreen({
     super.key,
     required this.userId,
+    required this.userEmail,
     required this.receiver,
     required this.amount,
     required this.transactionDate,
@@ -24,12 +26,8 @@ class TransactionResultScreen extends StatefulWidget {
 class _TransactionResultScreenState
     extends State<TransactionResultScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-
-  late Animation<double> _tickAnimation;
-  late Animation<Offset> _sheetAnimation;
-
-  bool _showDetails = false;
+  late final AnimationController _animationController;
+  late final Animation<double> _slideAnimation;
 
   @override
   void initState() {
@@ -37,41 +35,15 @@ class _TransactionResultScreenState
 
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 450),
     );
 
-    _tickAnimation = CurvedAnimation(
+    _slideAnimation = CurvedAnimation(
       parent: _animationController,
-      curve: Curves.elasticOut,
-    );
-
-    _sheetAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(
-          0.35,
-          1.0,
-          curve: Curves.easeOutCubic,
-        ),
-      ),
+      curve: Curves.easeOutCubic,
     );
 
     _animationController.forward();
-
-    // Show the payment details after the success tick appears.
-    Future.delayed(
-      const Duration(milliseconds: 650),
-      () {
-        if (mounted) {
-          setState(() {
-            _showDetails = true;
-          });
-        }
-      },
-    );
   }
 
   @override
@@ -80,26 +52,22 @@ class _TransactionResultScreenState
     super.dispose();
   }
 
-  // =========================================================
-  // DATE & TIME
-  // =========================================================
-
   String _formatDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
     final year = date.year.toString();
 
-    final hour = date.hour % 12 == 0 ? 12 : date.hour % 12;
-    final minute = date.minute.toString().padLeft(2, '0');
+    final hour =
+        date.hour % 12 == 0 ? 12 : date.hour % 12;
 
-    final period = date.hour >= 12 ? 'PM' : 'AM';
+    final minute =
+        date.minute.toString().padLeft(2, '0');
+
+    final period =
+        date.hour >= 12 ? 'PM' : 'AM';
 
     return '$day/$month/$year • $hour:$minute $period';
   }
-
-  // =========================================================
-  // OPEN HISTORY
-  // =========================================================
 
   void _openHistory() {
     Navigator.pushReplacement(
@@ -107,67 +75,57 @@ class _TransactionResultScreenState
       MaterialPageRoute(
         builder: (context) => HistoryScreen(
           userId: widget.userId,
+          userEmail: widget.userEmail,
         ),
       ),
     );
   }
 
-  // =========================================================
-  // DONE
-  // =========================================================
-
   void _done() {
     Navigator.pop(context, true);
   }
 
-  // =========================================================
-  // UI
-  // =========================================================
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7FA),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            // =================================================
-            // SUCCESS AREA
-            // =================================================
-
-            Center(
-              child: AnimatedBuilder(
-                animation: _tickAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _tickAnimation.value,
-                    child: child,
-                  );
-                },
+            Expanded(
+              child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 78,
-                      height: 78,
+                      width: 88,
+                      height: 88,
                       decoration: const BoxDecoration(
+                        color: Color(0xFF16A34A),
                         shape: BoxShape.circle,
-                        color: Color(0xFFE8F5E9),
                       ),
                       child: const Icon(
                         Icons.check,
-                        color: Colors.green,
-                        size: 48,
+                        color: Colors.white,
+                        size: 54,
                       ),
                     ),
-
-                    const SizedBox(height: 18),
-
+                    const SizedBox(height: 22),
                     const Text(
                       'Payment Successful',
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 27,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xFF111827),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Your money has been sent successfully.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF6B7280),
                       ),
                     ),
                   ],
@@ -175,35 +133,36 @@ class _TransactionResultScreenState
               ),
             ),
 
-            // =================================================
-            // PAYMENT DETAILS SLIDE-UP
-            // =================================================
+            AnimatedBuilder(
+              animation: _slideAnimation,
+              builder: (context, child) {
+                final offset =
+                    1.0 - _slideAnimation.value;
 
-            if (_showDetails)
-              Positioned.fill(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SlideTransition(
-                    position: _sheetAnimation,
-                    child: _buildPaymentDetails(),
+                return Transform.translate(
+                  offset: Offset(
+                    0,
+                    offset * 180,
                   ),
-                ),
-              ),
+                  child: child,
+                );
+              },
+              child: _buildBottomSheet(),
+            ),
           ],
         ),
       ),
     );
   }
 
-  // =========================================================
-  // PAYMENT DETAILS CARD
-  // =========================================================
-
-  Widget _buildPaymentDetails() {
+  Widget _buildBottomSheet() {
     return Container(
       width: double.infinity,
-      constraints: const BoxConstraints(
-        maxHeight: 520,
+      padding: const EdgeInsets.fromLTRB(
+        24,
+        24,
+        24,
+        20,
       ),
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -212,242 +171,166 @@ class _TransactionResultScreenState
         ),
         boxShadow: [
           BoxShadow(
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: Offset(0, -5),
             color: Colors.black12,
+            blurRadius: 20,
+            offset: Offset(0, -5),
           ),
         ],
       ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-          24,
-          12,
-          24,
-          24,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // =================================================
-            // DRAG HANDLE
-            // =================================================
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 42,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.black12,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
 
-            Center(
-              child: Container(
-                width: 45,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(10),
+          const SizedBox(height: 24),
+
+          const Text(
+            '₹',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          Text(
+            '₹${widget.amount.toStringAsFixed(2)}',
+            style: const TextStyle(
+              fontSize: 34,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF111827),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          _detailRow(
+            icon: Icons.person_outline,
+            label: 'Receiver',
+            value: widget.receiver,
+          ),
+
+          const Divider(height: 24),
+
+          _detailRow(
+            icon: Icons.calendar_today_outlined,
+            label: 'Date & Time',
+            value: _formatDate(widget.transactionDate),
+          ),
+
+          const Divider(height: 24),
+
+          _detailRow(
+            icon: Icons.verified_outlined,
+            label: 'Status',
+            value: 'Completed',
+            valueColor: const Color(0xFF16A34A),
+          ),
+
+          const SizedBox(height: 24),
+
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: _openHistory,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF111827),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text(
+                'View Transaction History',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
+          ),
 
-            const SizedBox(height: 22),
+          const SizedBox(height: 10),
 
-            // =================================================
-            // SUCCESS HEADER
-            // =================================================
-
-            Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFE8F5E9),
-                  ),
-                  child: const Icon(
-                    Icons.check,
-                    color: Colors.green,
-                    size: 30,
-                  ),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton(
+              onPressed: _done,
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
                 ),
-
-                const SizedBox(width: 14),
-
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Payment Successful',
-                        style: TextStyle(
-                          fontSize: 19,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Money sent successfully',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 25),
-
-            // =================================================
-            // AMOUNT
-            // =================================================
-
-            Center(
-              child: Text(
-                '₹${widget.amount.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.bold,
+              ),
+              child: const Text(
+                'Done',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-
-            const SizedBox(height: 26),
-
-            const Divider(),
-
-            const SizedBox(height: 8),
-
-            // =================================================
-            // PAYMENT DETAILS
-            // =================================================
-
-            const Text(
-              'Payment Details',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            _detailRow(
-              icon: Icons.person_outline,
-              title: 'Receiver',
-              value: widget.receiver,
-            ),
-
-            const SizedBox(height: 16),
-
-            _detailRow(
-              icon: Icons.currency_rupee,
-              title: 'Amount',
-              value: '₹${widget.amount.toStringAsFixed(2)}',
-            ),
-
-            const SizedBox(height: 16),
-
-            _detailRow(
-              icon: Icons.calendar_today_outlined,
-              title: 'Date & Time',
-              value: _formatDate(widget.transactionDate),
-            ),
-
-            const SizedBox(height: 16),
-
-            _detailRow(
-              icon: Icons.check_circle_outline,
-              title: 'Status',
-              value: 'Successful',
-              valueColor: Colors.green,
-            ),
-
-            const SizedBox(height: 25),
-
-            // =================================================
-            // VIEW HISTORY
-            // =================================================
-
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: OutlinedButton.icon(
-                onPressed: _openHistory,
-                icon: const Icon(Icons.history),
-                label: const Text(
-                  'View Transaction History',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // =================================================
-            // DONE
-            // =================================================
-
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _done,
-                child: const Text(
-                  'Done',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  // =========================================================
-  // DETAIL ROW
-  // =========================================================
-
   Widget _detailRow({
     required IconData icon,
-    required String title,
+    required String label,
     required String value,
     Color? valueColor,
   }) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 22,
-          color: Colors.grey.shade700,
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.05),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            size: 20,
+            color: const Color(0xFF374151),
+          ),
         ),
 
-        const SizedBox(width: 14),
+        const SizedBox(width: 12),
 
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                label,
                 style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 13,
+                  fontSize: 12,
+                  color: Color(0xFF6B7280),
                 ),
               ),
-
-              const SizedBox(height: 4),
-
+              const SizedBox(height: 3),
               Text(
                 value,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: valueColor,
+                  color: valueColor ??
+                      const Color(0xFF111827),
                 ),
               ),
             ],

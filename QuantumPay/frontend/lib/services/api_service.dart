@@ -3,7 +3,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:8000';
+  // Physical Android phones use the public HTTPS ngrok backend.
+  static const String baseUrl =
+      'https://squeak-crablike-walnut.ngrok-free.dev';
+
+  static Map<String, dynamic> _jsonMap(http.Response response) {
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+      return {'detail': 'Unexpected server response'};
+    } catch (_) {
+      return {'detail': 'Invalid server response'};
+    }
+  }
 
   // =========================================================
   // LOGIN
@@ -15,28 +29,140 @@ class ApiService {
   ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/login'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
         'password': password,
       }),
     );
 
-    final data = jsonDecode(response.body);
+    final data = _jsonMap(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(data['detail'] ?? 'Login failed');
+  }
+
+  // =========================================================
+  // REGISTER
+  // =========================================================
+
+  static Future<Map<String, dynamic>> register({
+    required String name,
+    required String email,
+    required String phone,
+    required String password,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'password': password,
+      }),
+    );
+
+    final data = _jsonMap(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(data['detail'] ?? 'Registration failed');
+  }
+
+  // =========================================================
+  // PAYMENT PIN SETUP
+  // =========================================================
+
+  static Future<Map<String, dynamic>> setupPaymentPin({
+    required int userId,
+    required String loginPassword,
+    required String paymentPin,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/payment-pin/setup'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'login_password': loginPassword,
+        'payment_pin': paymentPin,
+      }),
+    );
+
+    final data = _jsonMap(response);
 
     if (response.statusCode == 200) {
       return data;
     }
 
     throw Exception(
-      data['detail'] ?? 'Login failed',
+      data['detail'] ?? 'Payment PIN setup failed',
     );
   }
 
   // =========================================================
-  // GET WALLET
+  // PAYMENT PIN VERIFY
+  // =========================================================
+
+  static Future<Map<String, dynamic>> verifyPaymentPin({
+    required int userId,
+    required String paymentPin,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/payment-pin/verify'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'payment_pin': paymentPin,
+      }),
+    );
+
+    final data = _jsonMap(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(
+      data['detail'] ?? 'Incorrect Payment PIN',
+    );
+  }
+
+  // =========================================================
+  // VIEW BALANCE WITH PAYMENT PIN
+  // =========================================================
+
+  static Future<Map<String, dynamic>> getBalanceWithPin({
+    required int userId,
+    required String paymentPin,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/wallet/balance'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'payment_pin': paymentPin,
+      }),
+    );
+
+    final data = _jsonMap(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(
+      data['detail'] ?? 'Unable to view balance',
+    );
+  }
+
+  // =========================================================
+  // WALLET METADATA / LEGACY COMPATIBILITY
   // =========================================================
 
   static Future<Map<String, dynamic>> getWallet(
@@ -46,7 +172,7 @@ class ApiService {
       Uri.parse('$baseUrl/wallet/$userId'),
     );
 
-    final data = jsonDecode(response.body);
+    final data = _jsonMap(response);
 
     if (response.statusCode == 200) {
       return data;
@@ -58,27 +184,27 @@ class ApiService {
   }
 
   // =========================================================
-  // SEND MONEY
+  // SEND MONEY WITH PAYMENT PIN
   // =========================================================
 
   static Future<Map<String, dynamic>> sendMoney({
     required int senderId,
     required String receiver,
     required double amount,
+    required String paymentPin,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/wallet/send'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'sender_id': senderId,
         'receiver': receiver,
         'amount': amount,
+        'payment_pin': paymentPin,
       }),
     );
 
-    final data = jsonDecode(response.body);
+    final data = _jsonMap(response);
 
     if (response.statusCode == 200) {
       return data;
@@ -90,7 +216,7 @@ class ApiService {
   }
 
   // =========================================================
-  // RECEIVE MONEY
+  // DISABLED RECEIVE MONEY - LEGACY COMPATIBILITY
   // =========================================================
 
   static Future<Map<String, dynamic>> receiveMoney({
@@ -99,23 +225,21 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/wallet/receive'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'user_id': userId,
         'amount': amount,
       }),
     );
 
-    final data = jsonDecode(response.body);
+    final data = _jsonMap(response);
 
     if (response.statusCode == 200) {
       return data;
     }
 
     throw Exception(
-      data['detail'] ?? 'Money receive failed',
+      data['detail'] ?? 'Receive Money is disabled',
     );
   }
 
@@ -130,39 +254,128 @@ class ApiService {
       Uri.parse('$baseUrl/transactions/$userId'),
     );
 
-    final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      if (decoded is List<dynamic>) {
+        return decoded;
+      }
+    }
+
+    final data = _jsonMap(response);
+    throw Exception(
+      data['detail'] ?? 'Unable to get transactions',
+    );
+  }
+
+  // =========================================================
+  // PASSKEY REGISTRATION OPTIONS
+  // =========================================================
+
+  static Future<Map<String, dynamic>>
+      getPasskeyRegistrationOptions({
+    required int userId,
+    required String password,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/passkey/register/options'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId,
+        'password': password,
+      }),
+    );
+
+    final data = _jsonMap(response);
 
     if (response.statusCode == 200) {
       return data;
     }
 
     throw Exception(
-      data['detail'] ?? 'Unable to get transactions',
+      data['detail'] ?? 'Unable to start passkey registration',
     );
   }
-  static Future<Map<String, dynamic>> register({
-  required String name,
-  required String email,
-  required String phone,
-  required String password,
-}) async {
-  final response = await http.post(
-    Uri.parse('$baseUrl/register'),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'password': password,
-    }),
-  );
 
-  final data = jsonDecode(response.body);
+  // =========================================================
+  // PASSKEY REGISTRATION VERIFY
+  // =========================================================
 
-  if (response.statusCode == 200 || response.statusCode == 201) {
-    return data;
+  static Future<Map<String, dynamic>>
+      verifyPasskeyRegistration({
+    required int stateId,
+    required Map<String, dynamic> credential,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/passkey/register/verify'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'state_id': stateId,
+        'credential': credential,
+      }),
+    );
+
+    final data = _jsonMap(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(
+      data['detail'] ?? 'Passkey registration failed',
+    );
   }
 
-  throw Exception(data['detail'] ?? 'Registration failed');
-}
+  // =========================================================
+  // PASSKEY LOGIN OPTIONS
+  // =========================================================
+
+  static Future<Map<String, dynamic>> getPasskeyLoginOptions({
+    required String email,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/passkey/login/options'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+      }),
+    );
+
+    final data = _jsonMap(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(
+      data['detail'] ?? 'Unable to start passkey login',
+    );
+  }
+
+  // =========================================================
+  // PASSKEY LOGIN VERIFY
+  // =========================================================
+
+  static Future<Map<String, dynamic>> verifyPasskeyLogin({
+    required int stateId,
+    required Map<String, dynamic> credential,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/passkey/login/verify'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'state_id': stateId,
+        'credential': credential,
+      }),
+    );
+
+    final data = _jsonMap(response);
+
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(
+      data['detail'] ?? 'Passkey login failed',
+    );
+  }
 }

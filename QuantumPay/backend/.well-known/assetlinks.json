@@ -1,0 +1,24 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.frontend",
+      "sha256_cert_fingerprints": [
+        "A9:9D:C1:B5:75:C7:EB:9F:5F:4C:40:19:97:79:58:F4:90:A7:8F:5A:05:19:25:C6:BE:8D:DC:6C:20:06:3F:F6"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "web",
+      "site": "https://squeak-crablike-walnut.ngrok-free.dev"
+    }
+  }
+]
