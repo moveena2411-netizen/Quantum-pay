@@ -1,0 +1,501 @@
+message_id,sender_phone,message_text,message_category,is_suspicious
+1,6000100001,Your account will be blocked today. Send payment to 6000200001 immediately to prevent suspension.,Account Threat Scam,1
+2,6000100002,Congratulations! You won a reward. Send payment to 6000200002 to claim it immediately.,Prize Scam,1
+3,6000100003,Urgent: verify your identity immediately using the provided payment link to 6000200003.,Urgent Verification Scam,1
+4,6000100004,Refund failed. Send payment to 6000200004 to process the refund.,Refund Scam,1
+5,6000100005,Scan this QR code and complete the payment to 6000200005 to verify your account.,QR Scam,1
+6,6000100006,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200006.,Investment Scam,1
+7,6000100007,Share your OTP and send payment to 6000200007 immediately to complete verification.,OTP Scam,1
+8,6000100008,Bank security alert: your account will be blocked. Transfer money to 6000200008 now.,Authority Scam,1
+9,6000100009,Your account will be blocked today. Send payment to 6000200009 immediately to prevent suspension.,Account Threat Scam,1
+10,6000100010,Congratulations! You won a reward. Send payment to 6000200010 to claim it immediately.,Prize Scam,1
+11,6000100011,Urgent: verify your identity immediately using the provided payment link to 6000200011.,Urgent Verification Scam,1
+12,6000100012,Refund failed. Send payment to 6000200012 to process the refund.,Refund Scam,1
+13,6000100013,Scan this QR code and complete the payment to 6000200013 to verify your account.,QR Scam,1
+14,6000100014,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200014.,Investment Scam,1
+15,6000100015,Share your OTP and send payment to 6000200015 immediately to complete verification.,OTP Scam,1
+16,6000100016,Bank security alert: your account will be blocked. Transfer money to 6000200016 now.,Authority Scam,1
+17,6000100017,Your account will be blocked today. Send payment to 6000200017 immediately to prevent suspension.,Account Threat Scam,1
+18,6000100018,Congratulations! You won a reward. Send payment to 6000200018 to claim it immediately.,Prize Scam,1
+19,6000100019,Urgent: verify your identity immediately using the provided payment link to 6000200019.,Urgent Verification Scam,1
+20,6000100020,Refund failed. Send payment to 6000200020 to process the refund.,Refund Scam,1
+21,6000100021,Scan this QR code and complete the payment to 6000200021 to verify your account.,QR Scam,1
+22,6000100022,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200022.,Investment Scam,1
+23,6000100023,Share your OTP and send payment to 6000200023 immediately to complete verification.,OTP Scam,1
+24,6000100024,Bank security alert: your account will be blocked. Transfer money to 6000200024 now.,Authority Scam,1
+25,6000100025,Your account will be blocked today. Send payment to 6000200025 immediately to prevent suspension.,Account Threat Scam,1
+26,6000100026,Congratulations! You won a reward. Send payment to 6000200026 to claim it immediately.,Prize Scam,1
+27,6000100027,Urgent: verify your identity immediately using the provided payment link to 6000200027.,Urgent Verification Scam,1
+28,6000100028,Refund failed. Send payment to 6000200028 to process the refund.,Refund Scam,1
+29,6000100029,Scan this QR code and complete the payment to 6000200029 to verify your account.,QR Scam,1
+30,6000100030,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200030.,Investment Scam,1
+31,6000100031,Share your OTP and send payment to 6000200031 immediately to complete verification.,OTP Scam,1
+32,6000100032,Bank security alert: your account will be blocked. Transfer money to 6000200032 now.,Authority Scam,1
+33,6000100033,Your account will be blocked today. Send payment to 6000200033 immediately to prevent suspension.,Account Threat Scam,1
+34,6000100034,Congratulations! You won a reward. Send payment to 6000200034 to claim it immediately.,Prize Scam,1
+35,6000100035,Urgent: verify your identity immediately using the provided payment link to 6000200035.,Urgent Verification Scam,1
+36,6000100036,Refund failed. Send payment to 6000200036 to process the refund.,Refund Scam,1
+37,6000100037,Scan this QR code and complete the payment to 6000200037 to verify your account.,QR Scam,1
+38,6000100038,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200038.,Investment Scam,1
+39,6000100039,Share your OTP and send payment to 6000200039 immediately to complete verification.,OTP Scam,1
+40,6000100040,Bank security alert: your account will be blocked. Transfer money to 6000200040 now.,Authority Scam,1
+41,6000100041,Your account will be blocked today. Send payment to 6000200041 immediately to prevent suspension.,Account Threat Scam,1
+42,6000100042,Congratulations! You won a reward. Send payment to 6000200042 to claim it immediately.,Prize Scam,1
+43,6000100043,Urgent: verify your identity immediately using the provided payment link to 6000200043.,Urgent Verification Scam,1
+44,6000100044,Refund failed. Send payment to 6000200044 to process the refund.,Refund Scam,1
+45,6000100045,Scan this QR code and complete the payment to 6000200045 to verify your account.,QR Scam,1
+46,6000100046,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200046.,Investment Scam,1
+47,6000100047,Share your OTP and send payment to 6000200047 immediately to complete verification.,OTP Scam,1
+48,6000100048,Bank security alert: your account will be blocked. Transfer money to 6000200048 now.,Authority Scam,1
+49,6000100049,Your account will be blocked today. Send payment to 6000200049 immediately to prevent suspension.,Account Threat Scam,1
+50,6000100050,Congratulations! You won a reward. Send payment to 6000200050 to claim it immediately.,Prize Scam,1
+51,6000100051,Urgent: verify your identity immediately using the provided payment link to 6000200051.,Urgent Verification Scam,1
+52,6000100052,Refund failed. Send payment to 6000200052 to process the refund.,Refund Scam,1
+53,6000100053,Scan this QR code and complete the payment to 6000200053 to verify your account.,QR Scam,1
+54,6000100054,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200054.,Investment Scam,1
+55,6000100055,Share your OTP and send payment to 6000200055 immediately to complete verification.,OTP Scam,1
+56,6000100056,Bank security alert: your account will be blocked. Transfer money to 6000200056 now.,Authority Scam,1
+57,6000100057,Your account will be blocked today. Send payment to 6000200057 immediately to prevent suspension.,Account Threat Scam,1
+58,6000100058,Congratulations! You won a reward. Send payment to 6000200058 to claim it immediately.,Prize Scam,1
+59,6000100059,Urgent: verify your identity immediately using the provided payment link to 6000200059.,Urgent Verification Scam,1
+60,6000100060,Refund failed. Send payment to 6000200060 to process the refund.,Refund Scam,1
+61,6000100061,Scan this QR code and complete the payment to 6000200061 to verify your account.,QR Scam,1
+62,6000100062,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200062.,Investment Scam,1
+63,6000100063,Share your OTP and send payment to 6000200063 immediately to complete verification.,OTP Scam,1
+64,6000100064,Bank security alert: your account will be blocked. Transfer money to 6000200064 now.,Authority Scam,1
+65,6000100065,Your account will be blocked today. Send payment to 6000200065 immediately to prevent suspension.,Account Threat Scam,1
+66,6000100066,Congratulations! You won a reward. Send payment to 6000200066 to claim it immediately.,Prize Scam,1
+67,6000100067,Urgent: verify your identity immediately using the provided payment link to 6000200067.,Urgent Verification Scam,1
+68,6000100068,Refund failed. Send payment to 6000200068 to process the refund.,Refund Scam,1
+69,6000100069,Scan this QR code and complete the payment to 6000200069 to verify your account.,QR Scam,1
+70,6000100070,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200070.,Investment Scam,1
+71,6000100071,Share your OTP and send payment to 6000200071 immediately to complete verification.,OTP Scam,1
+72,6000100072,Bank security alert: your account will be blocked. Transfer money to 6000200072 now.,Authority Scam,1
+73,6000100073,Your account will be blocked today. Send payment to 6000200073 immediately to prevent suspension.,Account Threat Scam,1
+74,6000100074,Congratulations! You won a reward. Send payment to 6000200074 to claim it immediately.,Prize Scam,1
+75,6000100075,Urgent: verify your identity immediately using the provided payment link to 6000200075.,Urgent Verification Scam,1
+76,6000100076,Refund failed. Send payment to 6000200076 to process the refund.,Refund Scam,1
+77,6000100077,Scan this QR code and complete the payment to 6000200077 to verify your account.,QR Scam,1
+78,6000100078,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200078.,Investment Scam,1
+79,6000100079,Share your OTP and send payment to 6000200079 immediately to complete verification.,OTP Scam,1
+80,6000100080,Bank security alert: your account will be blocked. Transfer money to 6000200080 now.,Authority Scam,1
+81,6000100081,Your account will be blocked today. Send payment to 6000200081 immediately to prevent suspension.,Account Threat Scam,1
+82,6000100082,Congratulations! You won a reward. Send payment to 6000200082 to claim it immediately.,Prize Scam,1
+83,6000100083,Urgent: verify your identity immediately using the provided payment link to 6000200083.,Urgent Verification Scam,1
+84,6000100084,Refund failed. Send payment to 6000200084 to process the refund.,Refund Scam,1
+85,6000100085,Scan this QR code and complete the payment to 6000200085 to verify your account.,QR Scam,1
+86,6000100086,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200086.,Investment Scam,1
+87,6000100087,Share your OTP and send payment to 6000200087 immediately to complete verification.,OTP Scam,1
+88,6000100088,Bank security alert: your account will be blocked. Transfer money to 6000200088 now.,Authority Scam,1
+89,6000100089,Your account will be blocked today. Send payment to 6000200089 immediately to prevent suspension.,Account Threat Scam,1
+90,6000100090,Congratulations! You won a reward. Send payment to 6000200090 to claim it immediately.,Prize Scam,1
+91,6000100091,Urgent: verify your identity immediately using the provided payment link to 6000200091.,Urgent Verification Scam,1
+92,6000100092,Refund failed. Send payment to 6000200092 to process the refund.,Refund Scam,1
+93,6000100093,Scan this QR code and complete the payment to 6000200093 to verify your account.,QR Scam,1
+94,6000100094,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200094.,Investment Scam,1
+95,6000100095,Share your OTP and send payment to 6000200095 immediately to complete verification.,OTP Scam,1
+96,6000100096,Bank security alert: your account will be blocked. Transfer money to 6000200096 now.,Authority Scam,1
+97,6000100097,Your account will be blocked today. Send payment to 6000200097 immediately to prevent suspension.,Account Threat Scam,1
+98,6000100098,Congratulations! You won a reward. Send payment to 6000200098 to claim it immediately.,Prize Scam,1
+99,6000100099,Urgent: verify your identity immediately using the provided payment link to 6000200099.,Urgent Verification Scam,1
+100,6000100100,Refund failed. Send payment to 6000200100 to process the refund.,Refund Scam,1
+101,6000100101,Scan this QR code and complete the payment to 6000200101 to verify your account.,QR Scam,1
+102,6000100102,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200102.,Investment Scam,1
+103,6000100103,Share your OTP and send payment to 6000200103 immediately to complete verification.,OTP Scam,1
+104,6000100104,Bank security alert: your account will be blocked. Transfer money to 6000200104 now.,Authority Scam,1
+105,6000100105,Your account will be blocked today. Send payment to 6000200105 immediately to prevent suspension.,Account Threat Scam,1
+106,6000100106,Congratulations! You won a reward. Send payment to 6000200106 to claim it immediately.,Prize Scam,1
+107,6000100107,Urgent: verify your identity immediately using the provided payment link to 6000200107.,Urgent Verification Scam,1
+108,6000100108,Refund failed. Send payment to 6000200108 to process the refund.,Refund Scam,1
+109,6000100109,Scan this QR code and complete the payment to 6000200109 to verify your account.,QR Scam,1
+110,6000100110,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200110.,Investment Scam,1
+111,6000100111,Share your OTP and send payment to 6000200111 immediately to complete verification.,OTP Scam,1
+112,6000100112,Bank security alert: your account will be blocked. Transfer money to 6000200112 now.,Authority Scam,1
+113,6000100113,Your account will be blocked today. Send payment to 6000200113 immediately to prevent suspension.,Account Threat Scam,1
+114,6000100114,Congratulations! You won a reward. Send payment to 6000200114 to claim it immediately.,Prize Scam,1
+115,6000100115,Urgent: verify your identity immediately using the provided payment link to 6000200115.,Urgent Verification Scam,1
+116,6000100116,Refund failed. Send payment to 6000200116 to process the refund.,Refund Scam,1
+117,6000100117,Scan this QR code and complete the payment to 6000200117 to verify your account.,QR Scam,1
+118,6000100118,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200118.,Investment Scam,1
+119,6000100119,Share your OTP and send payment to 6000200119 immediately to complete verification.,OTP Scam,1
+120,6000100120,Bank security alert: your account will be blocked. Transfer money to 6000200120 now.,Authority Scam,1
+121,6000100121,Your account will be blocked today. Send payment to 6000200121 immediately to prevent suspension.,Account Threat Scam,1
+122,6000100122,Congratulations! You won a reward. Send payment to 6000200122 to claim it immediately.,Prize Scam,1
+123,6000100123,Urgent: verify your identity immediately using the provided payment link to 6000200123.,Urgent Verification Scam,1
+124,6000100124,Refund failed. Send payment to 6000200124 to process the refund.,Refund Scam,1
+125,6000100125,Scan this QR code and complete the payment to 6000200125 to verify your account.,QR Scam,1
+126,6000100126,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200126.,Investment Scam,1
+127,6000100127,Share your OTP and send payment to 6000200127 immediately to complete verification.,OTP Scam,1
+128,6000100128,Bank security alert: your account will be blocked. Transfer money to 6000200128 now.,Authority Scam,1
+129,6000100129,Your account will be blocked today. Send payment to 6000200129 immediately to prevent suspension.,Account Threat Scam,1
+130,6000100130,Congratulations! You won a reward. Send payment to 6000200130 to claim it immediately.,Prize Scam,1
+131,6000100131,Urgent: verify your identity immediately using the provided payment link to 6000200131.,Urgent Verification Scam,1
+132,6000100132,Refund failed. Send payment to 6000200132 to process the refund.,Refund Scam,1
+133,6000100133,Scan this QR code and complete the payment to 6000200133 to verify your account.,QR Scam,1
+134,6000100134,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200134.,Investment Scam,1
+135,6000100135,Share your OTP and send payment to 6000200135 immediately to complete verification.,OTP Scam,1
+136,6000100136,Bank security alert: your account will be blocked. Transfer money to 6000200136 now.,Authority Scam,1
+137,6000100137,Your account will be blocked today. Send payment to 6000200137 immediately to prevent suspension.,Account Threat Scam,1
+138,6000100138,Congratulations! You won a reward. Send payment to 6000200138 to claim it immediately.,Prize Scam,1
+139,6000100139,Urgent: verify your identity immediately using the provided payment link to 6000200139.,Urgent Verification Scam,1
+140,6000100140,Refund failed. Send payment to 6000200140 to process the refund.,Refund Scam,1
+141,6000100141,Scan this QR code and complete the payment to 6000200141 to verify your account.,QR Scam,1
+142,6000100142,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200142.,Investment Scam,1
+143,6000100143,Share your OTP and send payment to 6000200143 immediately to complete verification.,OTP Scam,1
+144,6000100144,Bank security alert: your account will be blocked. Transfer money to 6000200144 now.,Authority Scam,1
+145,6000100145,Your account will be blocked today. Send payment to 6000200145 immediately to prevent suspension.,Account Threat Scam,1
+146,6000100146,Congratulations! You won a reward. Send payment to 6000200146 to claim it immediately.,Prize Scam,1
+147,6000100147,Urgent: verify your identity immediately using the provided payment link to 6000200147.,Urgent Verification Scam,1
+148,6000100148,Refund failed. Send payment to 6000200148 to process the refund.,Refund Scam,1
+149,6000100149,Scan this QR code and complete the payment to 6000200149 to verify your account.,QR Scam,1
+150,6000100150,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200150.,Investment Scam,1
+151,6000100151,Share your OTP and send payment to 6000200151 immediately to complete verification.,OTP Scam,1
+152,6000100152,Bank security alert: your account will be blocked. Transfer money to 6000200152 now.,Authority Scam,1
+153,6000100153,Your account will be blocked today. Send payment to 6000200153 immediately to prevent suspension.,Account Threat Scam,1
+154,6000100154,Congratulations! You won a reward. Send payment to 6000200154 to claim it immediately.,Prize Scam,1
+155,6000100155,Urgent: verify your identity immediately using the provided payment link to 6000200155.,Urgent Verification Scam,1
+156,6000100156,Refund failed. Send payment to 6000200156 to process the refund.,Refund Scam,1
+157,6000100157,Scan this QR code and complete the payment to 6000200157 to verify your account.,QR Scam,1
+158,6000100158,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200158.,Investment Scam,1
+159,6000100159,Share your OTP and send payment to 6000200159 immediately to complete verification.,OTP Scam,1
+160,6000100160,Bank security alert: your account will be blocked. Transfer money to 6000200160 now.,Authority Scam,1
+161,6000100161,Your account will be blocked today. Send payment to 6000200161 immediately to prevent suspension.,Account Threat Scam,1
+162,6000100162,Congratulations! You won a reward. Send payment to 6000200162 to claim it immediately.,Prize Scam,1
+163,6000100163,Urgent: verify your identity immediately using the provided payment link to 6000200163.,Urgent Verification Scam,1
+164,6000100164,Refund failed. Send payment to 6000200164 to process the refund.,Refund Scam,1
+165,6000100165,Scan this QR code and complete the payment to 6000200165 to verify your account.,QR Scam,1
+166,6000100166,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200166.,Investment Scam,1
+167,6000100167,Share your OTP and send payment to 6000200167 immediately to complete verification.,OTP Scam,1
+168,6000100168,Bank security alert: your account will be blocked. Transfer money to 6000200168 now.,Authority Scam,1
+169,6000100169,Your account will be blocked today. Send payment to 6000200169 immediately to prevent suspension.,Account Threat Scam,1
+170,6000100170,Congratulations! You won a reward. Send payment to 6000200170 to claim it immediately.,Prize Scam,1
+171,6000100171,Urgent: verify your identity immediately using the provided payment link to 6000200171.,Urgent Verification Scam,1
+172,6000100172,Refund failed. Send payment to 6000200172 to process the refund.,Refund Scam,1
+173,6000100173,Scan this QR code and complete the payment to 6000200173 to verify your account.,QR Scam,1
+174,6000100174,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200174.,Investment Scam,1
+175,6000100175,Share your OTP and send payment to 6000200175 immediately to complete verification.,OTP Scam,1
+176,6000100176,Bank security alert: your account will be blocked. Transfer money to 6000200176 now.,Authority Scam,1
+177,6000100177,Your account will be blocked today. Send payment to 6000200177 immediately to prevent suspension.,Account Threat Scam,1
+178,6000100178,Congratulations! You won a reward. Send payment to 6000200178 to claim it immediately.,Prize Scam,1
+179,6000100179,Urgent: verify your identity immediately using the provided payment link to 6000200179.,Urgent Verification Scam,1
+180,6000100180,Refund failed. Send payment to 6000200180 to process the refund.,Refund Scam,1
+181,6000100181,Scan this QR code and complete the payment to 6000200181 to verify your account.,QR Scam,1
+182,6000100182,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200182.,Investment Scam,1
+183,6000100183,Share your OTP and send payment to 6000200183 immediately to complete verification.,OTP Scam,1
+184,6000100184,Bank security alert: your account will be blocked. Transfer money to 6000200184 now.,Authority Scam,1
+185,6000100185,Your account will be blocked today. Send payment to 6000200185 immediately to prevent suspension.,Account Threat Scam,1
+186,6000100186,Congratulations! You won a reward. Send payment to 6000200186 to claim it immediately.,Prize Scam,1
+187,6000100187,Urgent: verify your identity immediately using the provided payment link to 6000200187.,Urgent Verification Scam,1
+188,6000100188,Refund failed. Send payment to 6000200188 to process the refund.,Refund Scam,1
+189,6000100189,Scan this QR code and complete the payment to 6000200189 to verify your account.,QR Scam,1
+190,6000100190,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200190.,Investment Scam,1
+191,6000100191,Share your OTP and send payment to 6000200191 immediately to complete verification.,OTP Scam,1
+192,6000100192,Bank security alert: your account will be blocked. Transfer money to 6000200192 now.,Authority Scam,1
+193,6000100193,Your account will be blocked today. Send payment to 6000200193 immediately to prevent suspension.,Account Threat Scam,1
+194,6000100194,Congratulations! You won a reward. Send payment to 6000200194 to claim it immediately.,Prize Scam,1
+195,6000100195,Urgent: verify your identity immediately using the provided payment link to 6000200195.,Urgent Verification Scam,1
+196,6000100196,Refund failed. Send payment to 6000200196 to process the refund.,Refund Scam,1
+197,6000100197,Scan this QR code and complete the payment to 6000200197 to verify your account.,QR Scam,1
+198,6000100198,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200198.,Investment Scam,1
+199,6000100199,Share your OTP and send payment to 6000200199 immediately to complete verification.,OTP Scam,1
+200,6000100200,Bank security alert: your account will be blocked. Transfer money to 6000200200 now.,Authority Scam,1
+201,6000100201,Your account will be blocked today. Send payment to 6000200201 immediately to prevent suspension.,Account Threat Scam,1
+202,6000100202,Congratulations! You won a reward. Send payment to 6000200202 to claim it immediately.,Prize Scam,1
+203,6000100203,Urgent: verify your identity immediately using the provided payment link to 6000200203.,Urgent Verification Scam,1
+204,6000100204,Refund failed. Send payment to 6000200204 to process the refund.,Refund Scam,1
+205,6000100205,Scan this QR code and complete the payment to 6000200205 to verify your account.,QR Scam,1
+206,6000100206,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200206.,Investment Scam,1
+207,6000100207,Share your OTP and send payment to 6000200207 immediately to complete verification.,OTP Scam,1
+208,6000100208,Bank security alert: your account will be blocked. Transfer money to 6000200208 now.,Authority Scam,1
+209,6000100209,Your account will be blocked today. Send payment to 6000200209 immediately to prevent suspension.,Account Threat Scam,1
+210,6000100210,Congratulations! You won a reward. Send payment to 6000200210 to claim it immediately.,Prize Scam,1
+211,6000100211,Urgent: verify your identity immediately using the provided payment link to 6000200211.,Urgent Verification Scam,1
+212,6000100212,Refund failed. Send payment to 6000200212 to process the refund.,Refund Scam,1
+213,6000100213,Scan this QR code and complete the payment to 6000200213 to verify your account.,QR Scam,1
+214,6000100214,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200214.,Investment Scam,1
+215,6000100215,Share your OTP and send payment to 6000200215 immediately to complete verification.,OTP Scam,1
+216,6000100216,Bank security alert: your account will be blocked. Transfer money to 6000200216 now.,Authority Scam,1
+217,6000100217,Your account will be blocked today. Send payment to 6000200217 immediately to prevent suspension.,Account Threat Scam,1
+218,6000100218,Congratulations! You won a reward. Send payment to 6000200218 to claim it immediately.,Prize Scam,1
+219,6000100219,Urgent: verify your identity immediately using the provided payment link to 6000200219.,Urgent Verification Scam,1
+220,6000100220,Refund failed. Send payment to 6000200220 to process the refund.,Refund Scam,1
+221,6000100221,Scan this QR code and complete the payment to 6000200221 to verify your account.,QR Scam,1
+222,6000100222,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200222.,Investment Scam,1
+223,6000100223,Share your OTP and send payment to 6000200223 immediately to complete verification.,OTP Scam,1
+224,6000100224,Bank security alert: your account will be blocked. Transfer money to 6000200224 now.,Authority Scam,1
+225,6000100225,Your account will be blocked today. Send payment to 6000200225 immediately to prevent suspension.,Account Threat Scam,1
+226,6000100226,Congratulations! You won a reward. Send payment to 6000200226 to claim it immediately.,Prize Scam,1
+227,6000100227,Urgent: verify your identity immediately using the provided payment link to 6000200227.,Urgent Verification Scam,1
+228,6000100228,Refund failed. Send payment to 6000200228 to process the refund.,Refund Scam,1
+229,6000100229,Scan this QR code and complete the payment to 6000200229 to verify your account.,QR Scam,1
+230,6000100230,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200230.,Investment Scam,1
+231,6000100231,Share your OTP and send payment to 6000200231 immediately to complete verification.,OTP Scam,1
+232,6000100232,Bank security alert: your account will be blocked. Transfer money to 6000200232 now.,Authority Scam,1
+233,6000100233,Your account will be blocked today. Send payment to 6000200233 immediately to prevent suspension.,Account Threat Scam,1
+234,6000100234,Congratulations! You won a reward. Send payment to 6000200234 to claim it immediately.,Prize Scam,1
+235,6000100235,Urgent: verify your identity immediately using the provided payment link to 6000200235.,Urgent Verification Scam,1
+236,6000100236,Refund failed. Send payment to 6000200236 to process the refund.,Refund Scam,1
+237,6000100237,Scan this QR code and complete the payment to 6000200237 to verify your account.,QR Scam,1
+238,6000100238,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200238.,Investment Scam,1
+239,6000100239,Share your OTP and send payment to 6000200239 immediately to complete verification.,OTP Scam,1
+240,6000100240,Bank security alert: your account will be blocked. Transfer money to 6000200240 now.,Authority Scam,1
+241,6000100241,Your account will be blocked today. Send payment to 6000200241 immediately to prevent suspension.,Account Threat Scam,1
+242,6000100242,Congratulations! You won a reward. Send payment to 6000200242 to claim it immediately.,Prize Scam,1
+243,6000100243,Urgent: verify your identity immediately using the provided payment link to 6000200243.,Urgent Verification Scam,1
+244,6000100244,Refund failed. Send payment to 6000200244 to process the refund.,Refund Scam,1
+245,6000100245,Scan this QR code and complete the payment to 6000200245 to verify your account.,QR Scam,1
+246,6000100246,Double your money quickly with this exclusive investment opportunity. Send payment to 6000200246.,Investment Scam,1
+247,6000100247,Share your OTP and send payment to 6000200247 immediately to complete verification.,OTP Scam,1
+248,6000100248,Bank security alert: your account will be blocked. Transfer money to 6000200248 now.,Authority Scam,1
+249,6000100249,Your account will be blocked today. Send payment to 6000200249 immediately to prevent suspension.,Account Threat Scam,1
+250,6000100250,Congratulations! You won a reward. Send payment to 6000200250 to claim it immediately.,Prize Scam,1
+251,6000100251,Please call me when you are free.,Normal Personal,0
+252,6000100252,Your scheduled payment has been processed successfully.,Normal Banking,0
+253,6000100253,Your package has been delivered successfully.,Normal Delivery,0
+254,6000100254,Your verification code is 482731. Do not share it.,Normal OTP,0
+255,6000100255,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+256,6000100256,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+257,6000100257,Please call me when you are free.,Normal Personal,0
+258,6000100258,Your scheduled payment has been processed successfully.,Normal Banking,0
+259,6000100259,Your package has been delivered successfully.,Normal Delivery,0
+260,6000100260,Your verification code is 482731. Do not share it.,Normal OTP,0
+261,6000100261,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+262,6000100262,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+263,6000100263,Please call me when you are free.,Normal Personal,0
+264,6000100264,Your scheduled payment has been processed successfully.,Normal Banking,0
+265,6000100265,Your package has been delivered successfully.,Normal Delivery,0
+266,6000100266,Your verification code is 482731. Do not share it.,Normal OTP,0
+267,6000100267,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+268,6000100268,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+269,6000100269,Please call me when you are free.,Normal Personal,0
+270,6000100270,Your scheduled payment has been processed successfully.,Normal Banking,0
+271,6000100271,Your package has been delivered successfully.,Normal Delivery,0
+272,6000100272,Your verification code is 482731. Do not share it.,Normal OTP,0
+273,6000100273,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+274,6000100274,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+275,6000100275,Please call me when you are free.,Normal Personal,0
+276,6000100276,Your scheduled payment has been processed successfully.,Normal Banking,0
+277,6000100277,Your package has been delivered successfully.,Normal Delivery,0
+278,6000100278,Your verification code is 482731. Do not share it.,Normal OTP,0
+279,6000100279,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+280,6000100280,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+281,6000100281,Please call me when you are free.,Normal Personal,0
+282,6000100282,Your scheduled payment has been processed successfully.,Normal Banking,0
+283,6000100283,Your package has been delivered successfully.,Normal Delivery,0
+284,6000100284,Your verification code is 482731. Do not share it.,Normal OTP,0
+285,6000100285,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+286,6000100286,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+287,6000100287,Please call me when you are free.,Normal Personal,0
+288,6000100288,Your scheduled payment has been processed successfully.,Normal Banking,0
+289,6000100289,Your package has been delivered successfully.,Normal Delivery,0
+290,6000100290,Your verification code is 482731. Do not share it.,Normal OTP,0
+291,6000100291,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+292,6000100292,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+293,6000100293,Please call me when you are free.,Normal Personal,0
+294,6000100294,Your scheduled payment has been processed successfully.,Normal Banking,0
+295,6000100295,Your package has been delivered successfully.,Normal Delivery,0
+296,6000100296,Your verification code is 482731. Do not share it.,Normal OTP,0
+297,6000100297,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+298,6000100298,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+299,6000100299,Please call me when you are free.,Normal Personal,0
+300,6000100300,Your scheduled payment has been processed successfully.,Normal Banking,0
+301,6000100301,Your package has been delivered successfully.,Normal Delivery,0
+302,6000100302,Your verification code is 482731. Do not share it.,Normal OTP,0
+303,6000100303,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+304,6000100304,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+305,6000100305,Please call me when you are free.,Normal Personal,0
+306,6000100306,Your scheduled payment has been processed successfully.,Normal Banking,0
+307,6000100307,Your package has been delivered successfully.,Normal Delivery,0
+308,6000100308,Your verification code is 482731. Do not share it.,Normal OTP,0
+309,6000100309,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+310,6000100310,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+311,6000100311,Please call me when you are free.,Normal Personal,0
+312,6000100312,Your scheduled payment has been processed successfully.,Normal Banking,0
+313,6000100313,Your package has been delivered successfully.,Normal Delivery,0
+314,6000100314,Your verification code is 482731. Do not share it.,Normal OTP,0
+315,6000100315,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+316,6000100316,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+317,6000100317,Please call me when you are free.,Normal Personal,0
+318,6000100318,Your scheduled payment has been processed successfully.,Normal Banking,0
+319,6000100319,Your package has been delivered successfully.,Normal Delivery,0
+320,6000100320,Your verification code is 482731. Do not share it.,Normal OTP,0
+321,6000100321,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+322,6000100322,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+323,6000100323,Please call me when you are free.,Normal Personal,0
+324,6000100324,Your scheduled payment has been processed successfully.,Normal Banking,0
+325,6000100325,Your package has been delivered successfully.,Normal Delivery,0
+326,6000100326,Your verification code is 482731. Do not share it.,Normal OTP,0
+327,6000100327,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+328,6000100328,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+329,6000100329,Please call me when you are free.,Normal Personal,0
+330,6000100330,Your scheduled payment has been processed successfully.,Normal Banking,0
+331,6000100331,Your package has been delivered successfully.,Normal Delivery,0
+332,6000100332,Your verification code is 482731. Do not share it.,Normal OTP,0
+333,6000100333,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+334,6000100334,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+335,6000100335,Please call me when you are free.,Normal Personal,0
+336,6000100336,Your scheduled payment has been processed successfully.,Normal Banking,0
+337,6000100337,Your package has been delivered successfully.,Normal Delivery,0
+338,6000100338,Your verification code is 482731. Do not share it.,Normal OTP,0
+339,6000100339,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+340,6000100340,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+341,6000100341,Please call me when you are free.,Normal Personal,0
+342,6000100342,Your scheduled payment has been processed successfully.,Normal Banking,0
+343,6000100343,Your package has been delivered successfully.,Normal Delivery,0
+344,6000100344,Your verification code is 482731. Do not share it.,Normal OTP,0
+345,6000100345,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+346,6000100346,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+347,6000100347,Please call me when you are free.,Normal Personal,0
+348,6000100348,Your scheduled payment has been processed successfully.,Normal Banking,0
+349,6000100349,Your package has been delivered successfully.,Normal Delivery,0
+350,6000100350,Your verification code is 482731. Do not share it.,Normal OTP,0
+351,6000100351,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+352,6000100352,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+353,6000100353,Please call me when you are free.,Normal Personal,0
+354,6000100354,Your scheduled payment has been processed successfully.,Normal Banking,0
+355,6000100355,Your package has been delivered successfully.,Normal Delivery,0
+356,6000100356,Your verification code is 482731. Do not share it.,Normal OTP,0
+357,6000100357,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+358,6000100358,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+359,6000100359,Please call me when you are free.,Normal Personal,0
+360,6000100360,Your scheduled payment has been processed successfully.,Normal Banking,0
+361,6000100361,Your package has been delivered successfully.,Normal Delivery,0
+362,6000100362,Your verification code is 482731. Do not share it.,Normal OTP,0
+363,6000100363,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+364,6000100364,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+365,6000100365,Please call me when you are free.,Normal Personal,0
+366,6000100366,Your scheduled payment has been processed successfully.,Normal Banking,0
+367,6000100367,Your package has been delivered successfully.,Normal Delivery,0
+368,6000100368,Your verification code is 482731. Do not share it.,Normal OTP,0
+369,6000100369,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+370,6000100370,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+371,6000100371,Please call me when you are free.,Normal Personal,0
+372,6000100372,Your scheduled payment has been processed successfully.,Normal Banking,0
+373,6000100373,Your package has been delivered successfully.,Normal Delivery,0
+374,6000100374,Your verification code is 482731. Do not share it.,Normal OTP,0
+375,6000100375,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+376,6000100376,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+377,6000100377,Please call me when you are free.,Normal Personal,0
+378,6000100378,Your scheduled payment has been processed successfully.,Normal Banking,0
+379,6000100379,Your package has been delivered successfully.,Normal Delivery,0
+380,6000100380,Your verification code is 482731. Do not share it.,Normal OTP,0
+381,6000100381,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+382,6000100382,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+383,6000100383,Please call me when you are free.,Normal Personal,0
+384,6000100384,Your scheduled payment has been processed successfully.,Normal Banking,0
+385,6000100385,Your package has been delivered successfully.,Normal Delivery,0
+386,6000100386,Your verification code is 482731. Do not share it.,Normal OTP,0
+387,6000100387,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+388,6000100388,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+389,6000100389,Please call me when you are free.,Normal Personal,0
+390,6000100390,Your scheduled payment has been processed successfully.,Normal Banking,0
+391,6000100391,Your package has been delivered successfully.,Normal Delivery,0
+392,6000100392,Your verification code is 482731. Do not share it.,Normal OTP,0
+393,6000100393,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+394,6000100394,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+395,6000100395,Please call me when you are free.,Normal Personal,0
+396,6000100396,Your scheduled payment has been processed successfully.,Normal Banking,0
+397,6000100397,Your package has been delivered successfully.,Normal Delivery,0
+398,6000100398,Your verification code is 482731. Do not share it.,Normal OTP,0
+399,6000100399,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+400,6000100400,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+401,6000100401,Please call me when you are free.,Normal Personal,0
+402,6000100402,Your scheduled payment has been processed successfully.,Normal Banking,0
+403,6000100403,Your package has been delivered successfully.,Normal Delivery,0
+404,6000100404,Your verification code is 482731. Do not share it.,Normal OTP,0
+405,6000100405,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+406,6000100406,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+407,6000100407,Please call me when you are free.,Normal Personal,0
+408,6000100408,Your scheduled payment has been processed successfully.,Normal Banking,0
+409,6000100409,Your package has been delivered successfully.,Normal Delivery,0
+410,6000100410,Your verification code is 482731. Do not share it.,Normal OTP,0
+411,6000100411,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+412,6000100412,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+413,6000100413,Please call me when you are free.,Normal Personal,0
+414,6000100414,Your scheduled payment has been processed successfully.,Normal Banking,0
+415,6000100415,Your package has been delivered successfully.,Normal Delivery,0
+416,6000100416,Your verification code is 482731. Do not share it.,Normal OTP,0
+417,6000100417,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+418,6000100418,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+419,6000100419,Please call me when you are free.,Normal Personal,0
+420,6000100420,Your scheduled payment has been processed successfully.,Normal Banking,0
+421,6000100421,Your package has been delivered successfully.,Normal Delivery,0
+422,6000100422,Your verification code is 482731. Do not share it.,Normal OTP,0
+423,6000100423,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+424,6000100424,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+425,6000100425,Please call me when you are free.,Normal Personal,0
+426,6000100426,Your scheduled payment has been processed successfully.,Normal Banking,0
+427,6000100427,Your package has been delivered successfully.,Normal Delivery,0
+428,6000100428,Your verification code is 482731. Do not share it.,Normal OTP,0
+429,6000100429,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+430,6000100430,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+431,6000100431,Please call me when you are free.,Normal Personal,0
+432,6000100432,Your scheduled payment has been processed successfully.,Normal Banking,0
+433,6000100433,Your package has been delivered successfully.,Normal Delivery,0
+434,6000100434,Your verification code is 482731. Do not share it.,Normal OTP,0
+435,6000100435,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+436,6000100436,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+437,6000100437,Please call me when you are free.,Normal Personal,0
+438,6000100438,Your scheduled payment has been processed successfully.,Normal Banking,0
+439,6000100439,Your package has been delivered successfully.,Normal Delivery,0
+440,6000100440,Your verification code is 482731. Do not share it.,Normal OTP,0
+441,6000100441,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+442,6000100442,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+443,6000100443,Please call me when you are free.,Normal Personal,0
+444,6000100444,Your scheduled payment has been processed successfully.,Normal Banking,0
+445,6000100445,Your package has been delivered successfully.,Normal Delivery,0
+446,6000100446,Your verification code is 482731. Do not share it.,Normal OTP,0
+447,6000100447,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+448,6000100448,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+449,6000100449,Please call me when you are free.,Normal Personal,0
+450,6000100450,Your scheduled payment has been processed successfully.,Normal Banking,0
+451,6000100451,Your package has been delivered successfully.,Normal Delivery,0
+452,6000100452,Your verification code is 482731. Do not share it.,Normal OTP,0
+453,6000100453,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+454,6000100454,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+455,6000100455,Please call me when you are free.,Normal Personal,0
+456,6000100456,Your scheduled payment has been processed successfully.,Normal Banking,0
+457,6000100457,Your package has been delivered successfully.,Normal Delivery,0
+458,6000100458,Your verification code is 482731. Do not share it.,Normal OTP,0
+459,6000100459,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+460,6000100460,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+461,6000100461,Please call me when you are free.,Normal Personal,0
+462,6000100462,Your scheduled payment has been processed successfully.,Normal Banking,0
+463,6000100463,Your package has been delivered successfully.,Normal Delivery,0
+464,6000100464,Your verification code is 482731. Do not share it.,Normal OTP,0
+465,6000100465,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+466,6000100466,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+467,6000100467,Please call me when you are free.,Normal Personal,0
+468,6000100468,Your scheduled payment has been processed successfully.,Normal Banking,0
+469,6000100469,Your package has been delivered successfully.,Normal Delivery,0
+470,6000100470,Your verification code is 482731. Do not share it.,Normal OTP,0
+471,6000100471,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+472,6000100472,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+473,6000100473,Please call me when you are free.,Normal Personal,0
+474,6000100474,Your scheduled payment has been processed successfully.,Normal Banking,0
+475,6000100475,Your package has been delivered successfully.,Normal Delivery,0
+476,6000100476,Your verification code is 482731. Do not share it.,Normal OTP,0
+477,6000100477,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+478,6000100478,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+479,6000100479,Please call me when you are free.,Normal Personal,0
+480,6000100480,Your scheduled payment has been processed successfully.,Normal Banking,0
+481,6000100481,Your package has been delivered successfully.,Normal Delivery,0
+482,6000100482,Your verification code is 482731. Do not share it.,Normal OTP,0
+483,6000100483,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+484,6000100484,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+485,6000100485,Please call me when you are free.,Normal Personal,0
+486,6000100486,Your scheduled payment has been processed successfully.,Normal Banking,0
+487,6000100487,Your package has been delivered successfully.,Normal Delivery,0
+488,6000100488,Your verification code is 482731. Do not share it.,Normal OTP,0
+489,6000100489,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+490,6000100490,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+491,6000100491,Please call me when you are free.,Normal Personal,0
+492,6000100492,Your scheduled payment has been processed successfully.,Normal Banking,0
+493,6000100493,Your package has been delivered successfully.,Normal Delivery,0
+494,6000100494,Your verification code is 482731. Do not share it.,Normal OTP,0
+495,6000100495,Weekend sale starts today. Visit our store for offers.,Normal Promotional,0
+496,6000100496,Your appointment is scheduled for tomorrow at 10 AM.,Normal Reminder,0
+497,6000100497,Please call me when you are free.,Normal Personal,0
+498,6000100498,Your scheduled payment has been processed successfully.,Normal Banking,0
+499,6000100499,Your package has been delivered successfully.,Normal Delivery,0
+500,6000100500,Your verification code is 482731. Do not share it.,Normal OTP,0

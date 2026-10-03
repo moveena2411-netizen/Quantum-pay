@@ -1,286 +1,186 @@
 import 'package:flutter/material.dart';
 
-import '../history/history_screen.dart';
-
-class TransactionResultScreen extends StatefulWidget {
+class TransactionResultScreen extends StatelessWidget {
   final int userId;
   final String userEmail;
+  final String sender;
   final String receiver;
   final double amount;
   final DateTime transactionDate;
+  final int? transactionId;
+  final double? balanceAfter;
+  final VoidCallback onDone;
+  final VoidCallback onViewHistory;
 
   const TransactionResultScreen({
     super.key,
     required this.userId,
     required this.userEmail,
+    required this.sender,
     required this.receiver,
     required this.amount,
     required this.transactionDate,
+    required this.onDone,
+    required this.onViewHistory,
+    this.transactionId,
+    this.balanceAfter,
   });
 
-  @override
-  State<TransactionResultScreen> createState() =>
-      _TransactionResultScreenState();
-}
+  String _formatDate(DateTime value) {
+    final local = value.toLocal();
+    final hour = local.hour % 12 == 0 ? 12 : local.hour % 12;
+    final minute = local.minute.toString().padLeft(2, '0');
+    final second = local.second.toString().padLeft(2, '0');
+    final period = local.hour >= 12 ? 'PM' : 'AM';
 
-class _TransactionResultScreenState
-    extends State<TransactionResultScreen>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _animationController;
-  late final Animation<double> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 450),
-    );
-
-    _slideAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-    );
-
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  String _formatDate(DateTime date) {
-    final day = date.day.toString().padLeft(2, '0');
-    final month = date.month.toString().padLeft(2, '0');
-    final year = date.year.toString();
-
-    final hour =
-        date.hour % 12 == 0 ? 12 : date.hour % 12;
-
-    final minute =
-        date.minute.toString().padLeft(2, '0');
-
-    final period =
-        date.hour >= 12 ? 'PM' : 'AM';
-
-    return '$day/$month/$year • $hour:$minute $period';
-  }
-
-  void _openHistory() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HistoryScreen(
-          userId: widget.userId,
-          userEmail: widget.userEmail,
-        ),
-      ),
-    );
-  }
-
-  void _done() {
-    Navigator.pop(context, true);
+    return '${local.day.toString().padLeft(2, '0')}/'
+        '${local.month.toString().padLeft(2, '0')}/'
+        '${local.year} • $hour:$minute:$second $period';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 88,
-                      height: 88,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF16A34A),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 54,
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-                    const Text(
-                      'Payment Successful',
-                      style: TextStyle(
-                        fontSize: 27,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF111827),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Your money has been sent successfully.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF6B7280),
-                      ),
-                    ),
-                  ],
+    return SafeArea(
+      top: false,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(30),
+          ),
+        ),
+        padding: const EdgeInsets.fromLTRB(22, 12, 22, 20),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 44,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-            ),
-
-            AnimatedBuilder(
-              animation: _slideAnimation,
-              builder: (context, child) {
-                final offset =
-                    1.0 - _slideAnimation.value;
-
-                return Transform.translate(
-                  offset: Offset(
-                    0,
-                    offset * 180,
+              const SizedBox(height: 18),
+              Container(
+                width: 66,
+                height: 66,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFDCFCE7),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  size: 40,
+                  color: Color(0xFF16A34A),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Payment Successful',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF111827),
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Your transfer has been completed.',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFF6B7280),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                '₹${amount.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: 34,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF111827),
+                ),
+              ),
+              const SizedBox(height: 18),
+              _detailRow(
+                icon: Icons.person_outline,
+                label: 'Recipient',
+                value: receiver,
+              ),
+              const Divider(height: 22),
+              _detailRow(
+                icon: Icons.account_circle_outlined,
+                label: 'Sender',
+                value: sender,
+              ),
+              const Divider(height: 22),
+              _detailRow(
+                icon: Icons.schedule_outlined,
+                label: 'Payment Time',
+                value: _formatDate(transactionDate),
+              ),
+              if (transactionId != null) ...[
+                const Divider(height: 22),
+                _detailRow(
+                  icon: Icons.receipt_long_outlined,
+                  label: 'Transaction ID',
+                  value: transactionId.toString(),
+                ),
+              ],
+              const Divider(height: 22),
+              _detailRow(
+                icon: Icons.verified_outlined,
+                label: 'Status',
+                value: 'Completed',
+                valueColor: const Color(0xFF16A34A),
+              ),
+              if (balanceAfter != null) ...[
+                const Divider(height: 22),
+                _detailRow(
+                  icon: Icons.account_balance_wallet_outlined,
+                  label: 'Balance After Payment',
+                  value: '₹${balanceAfter!.toStringAsFixed(2)}',
+                ),
+              ],
+              const SizedBox(height: 22),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: onViewHistory,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF111827),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
-                  child: child,
-                );
-              },
-              child: _buildBottomSheet(),
-            ),
-          ],
+                  child: const Text(
+                    'View Transaction History',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: OutlinedButton(
+                  onPressed: onDone,
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text('Done'),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomSheet() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
-        24,
-        24,
-        24,
-        20,
-      ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(28),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 20,
-            offset: Offset(0, -5),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 42,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.black12,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          const Text(
-            '₹',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
-
-          const SizedBox(height: 4),
-
-          Text(
-            '₹${widget.amount.toStringAsFixed(2)}',
-            style: const TextStyle(
-              fontSize: 34,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF111827),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          _detailRow(
-            icon: Icons.person_outline,
-            label: 'Receiver',
-            value: widget.receiver,
-          ),
-
-          const Divider(height: 24),
-
-          _detailRow(
-            icon: Icons.calendar_today_outlined,
-            label: 'Date & Time',
-            value: _formatDate(widget.transactionDate),
-          ),
-
-          const Divider(height: 24),
-
-          _detailRow(
-            icon: Icons.verified_outlined,
-            label: 'Status',
-            value: 'Completed',
-            valueColor: const Color(0xFF16A34A),
-          ),
-
-          const SizedBox(height: 24),
-
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              onPressed: _openHistory,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF111827),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: const Text(
-                'View Transaction History',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: OutlinedButton(
-              onPressed: _done,
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: const Text(
-                'Done',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -306,13 +206,10 @@ class _TransactionResultScreenState
             color: const Color(0xFF374151),
           ),
         ),
-
         const SizedBox(width: 12),
-
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 label,
@@ -329,8 +226,7 @@ class _TransactionResultScreenState
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: valueColor ??
-                      const Color(0xFF111827),
+                  color: valueColor ?? const Color(0xFF111827),
                 ),
               ),
             ],

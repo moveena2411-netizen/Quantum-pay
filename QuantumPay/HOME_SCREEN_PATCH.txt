@@ -1,0 +1,41 @@
+HOME SCREEN INTEGRATION
+=======================
+
+Do NOT replace your existing HomeScreen file. Keep all your existing wallet UI/code.
+Make these 3 additions only.
+
+1) Add this import with the other imports:
+
+import '../../services/shared_message_service.dart';
+
+Adjust ../../ only if your HomeScreen is in a different folder.
+
+2) In _HomeScreenState.initState(), keep your existing code and add:
+
+SharedMessageService.start(context);
+
+Example:
+
+@override
+void initState() {
+  super.initState();
+
+  SharedMessageService.start(context);
+
+  // KEEP YOUR EXISTING INIT CODE HERE.
+}
+
+3) In _HomeScreenState.dispose(), keep your existing cleanup and add:
+
+SharedMessageService.stop();
+
+Example:
+
+@override
+void dispose() {
+  SharedMessageService.stop();
+
+  // KEEP YOUR EXISTING DISPOSE CODE HERE.
+
+  super.dispose();
+}

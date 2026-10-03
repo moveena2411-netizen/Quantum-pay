@@ -1,0 +1,28 @@
+HOME SCREEN INTEGRATION
+=======================
+
+1. Add this import near the other imports in lib/screens/home/home_screen.dart:
+
+import '../../services/shared_message_service.dart';
+
+2. In _HomeScreenState.initState(), keep your existing code and add:
+
+SharedMessageService.start(context);
+
+For example:
+
+@override
+void initState() {
+  super.initState();
+  _loadBalance();
+  SharedMessageService.start(context);
+}
+
+3. In dispose(), add:
+
+SharedMessageService.stop();
+
+Do NOT remove your existing dispose code.
+
+The service will receive Share -> QuantumPay text, send it to
+POST /security/messages/receive, and display the analyzer result.

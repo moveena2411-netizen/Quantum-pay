@@ -77,11 +77,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
       return 'Date unavailable';
     }
 
-    final parsed =
-        DateTime.tryParse(value.toString());
+    var parsed = DateTime.tryParse(value.toString());
 
     if (parsed == null) {
       return value.toString();
+    }
+
+    // Backend timestamps are UTC. Older rows may be stored as
+    // timezone-naive UTC, so treat a naive value as UTC explicitly.
+    if (!parsed.isUtc && !value.toString().contains(RegExp(r'[zZ]|[+-]\d{2}:?\d{2}$'))) {
+      parsed = DateTime.utc(
+        parsed.year,
+        parsed.month,
+        parsed.day,
+        parsed.hour,
+        parsed.minute,
+        parsed.second,
+        parsed.millisecond,
+        parsed.microsecond,
+      );
     }
 
     final local = parsed.toLocal();
@@ -96,13 +110,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final minute =
         local.minute.toString().padLeft(2, '0');
 
+    final second =
+        local.second.toString().padLeft(2, '0');
+
     final period =
         local.hour >= 12 ? 'PM' : 'AM';
 
     return '${local.day.toString().padLeft(2, '0')}/'
         '${local.month.toString().padLeft(2, '0')}/'
         '${local.year}  '
-        '$hour12:$minute $period';
+        '$hour12:$minute:$second $period';
   }
 
   @override

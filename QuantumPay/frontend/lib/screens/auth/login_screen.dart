@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:passkeys/authenticator.dart';
 import 'package:passkeys/types.dart';
 
 import '../../services/api_service.dart';
 import '../home/home_screen.dart';
-import 'payment_pin_setup_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,223 +15,62 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // ============================================================
+  // CONTROLLERS
+  // ============================================================
+
   final TextEditingController _emailController =
       TextEditingController();
+
   final TextEditingController _passwordController =
       TextEditingController();
 
-  bool _isLoading = false;
+  // ============================================================
+  // AUTHENTICATION
+  // ============================================================
+
+  final LocalAuthentication _localAuth =
+      LocalAuthentication();
+
+  final PasskeyAuthenticator _passkeyAuthenticator =
+      PasskeyAuthenticator(
+    debugMode: true,
+  );
+
+  // ============================================================
+  // STATE
+  // ============================================================
+
+  static const int maxPasskeyFailures = 5;
+
+  int _passkeyFailures = 0;
+
+  bool _passwordVerified = false;
+  bool _phoneAuthenticationVerified = false;
+
   bool _isPasskeyLoading = false;
+  bool _isPasswordLoading = false;
+  bool _isPhoneLoading = false;
+
   bool _obscurePassword = true;
 
   String? _errorMessage;
+
+  // ============================================================
+  // DISPOSE
+  // ============================================================
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+
     super.dispose();
   }
 
-  // =========================================================
-  // NORMAL LOGIN
-  // =========================================================
-
-  Future<void> _login() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-
-    setState(() {
-      _errorMessage = null;
-    });
-
-    if (email.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please enter your email';
-      });
-      return;
-    }
-
-    if (password.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please enter your password';
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final result = await ApiService.login(
-        email,
-        password,
-      );
-
-      if (!mounted) {
-        return;
-      }
-
-      final int userId = result['user_id'] as int;
-      final String userName =
-          (result['name'] ?? 'User').toString();
-      final String userEmail =
-          (result['email'] ?? email).toString();
-      final bool paymentPinSet =
-          result['payment_pin_set'] == true;
-
-      if (!paymentPinSet) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => PaymentPinSetupScreen(
-              userId: userId,
-              userName: userName,
-              userEmail: userEmail,
-              loginPassword: password,
-            ),
-          ),
-        );
-        return;
-      }
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => HomeScreen(
-            userId: userId,
-            userName: userName,
-            userEmail: userEmail,
-          ),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _errorMessage = _cleanError(e);
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  // =========================================================
-  // PASSKEY LOGIN
-  // =========================================================
-
-  Future<void> _passkeyLogin() async {
-    final email = _emailController.text.trim();
-
-    setState(() {
-      _errorMessage = null;
-    });
-
-    if (email.isEmpty) {
-      setState(() {
-        _errorMessage =
-            'Enter the account email before using Passkey.';
-      });
-      return;
-    }
-
-    setState(() {
-      _isPasskeyLoading = true;
-    });
-
-    try {
-      // 1. Get a fresh server challenge.
-      final optionsResult =
-          await ApiService.getPasskeyLoginOptions(
-        email: email,
-      );
-
-      final String optionsJson =
-          optionsResult['options'].toString();
-
-      // 2. Android Credential Manager uses the resident passkey.
-      final options =
-          jsonDecode(optionsJson) as Map<String, dynamic>;
-
-      // Some versions of the Flutter package expect the
-      // allowCredentials field to exist. An empty list preserves
-      // resident/discoverable passkey selection.
-      options.putIfAbsent(
-        'allowCredentials',
-        () => <dynamic>[],
-      );
-
-      final request =
-          AuthenticateRequestType.fromJsonString(
-        jsonEncode(options),
-      );
-
-      final authenticator = PasskeyAuthenticator(
-        debugMode: true,
-      );
-
-      // 3. User verifies with device PIN/biometric.
-      final response = await authenticator.authenticate(
-        request,
-      );
-
-      // 4. Send signed assertion to FastAPI.
-      final credential = response.toJson();
-
-      final result =
-          await ApiService.verifyPasskeyLogin(
-        stateId: optionsResult['state_id'] as int,
-        credential: credential,
-      );
-
-      if (!mounted) {
-        return;
-      }
-
-      final bool paymentPinSet =
-          result['payment_pin_set'] == true;
-
-      if (!paymentPinSet) {
-        setState(() {
-          _errorMessage =
-              'Please log in with your password once to create the Payment PIN.';
-        });
-        return;
-      }
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => HomeScreen(
-            userId: result['user_id'] as int,
-            userName: (result['name'] ?? 'User').toString(),
-            userEmail: (result['email'] ?? email).toString(),
-          ),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _errorMessage = _cleanError(e);
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isPasskeyLoading = false;
-        });
-      }
-    }
-  }
+  // ============================================================
+  // ERROR CLEANING
+  // ============================================================
 
   String _cleanError(Object error) {
     String message = error.toString();
@@ -245,223 +82,998 @@ class _LoginScreenState extends State<LoginScreen> {
     return message;
   }
 
-  // =========================================================
-  // UI
-  // =========================================================
+  // ============================================================
+  // PASSKEY AUTHENTICATION
+  // ============================================================
+
+  Future<Map<String, dynamic>?> _authenticatePasskey() async {
+    final String email =
+        _emailController.text.trim();
+
+    if (email.isEmpty) {
+      setState(() {
+        _errorMessage =
+            'Enter your Gmail address first.';
+      });
+
+      return null;
+    }
+
+    try {
+      // ----------------------------------------------------------
+      // 1. GET FRESH PASSKEY OPTIONS
+      // ----------------------------------------------------------
+
+      final Map<String, dynamic> optionsResult =
+          await ApiService.getPasskeyLoginOptions(
+        email: email,
+      );
+
+      // ----------------------------------------------------------
+      // 2. CONVERT SERVER OPTIONS
+      // ----------------------------------------------------------
+
+      final String optionsJson =
+          optionsResult['options'].toString();
+
+      final AuthenticateRequestType request =
+          AuthenticateRequestType.fromJsonString(
+        optionsJson,
+      );
+
+      // ----------------------------------------------------------
+      // 3. ANDROID PASSKEY
+      // ----------------------------------------------------------
+
+      final AuthenticateResponseType response =
+          await _passkeyAuthenticator.authenticate(
+        request,
+      );
+
+      // ----------------------------------------------------------
+      // 4. SEND RESULT TO FASTAPI
+      // ----------------------------------------------------------
+
+      final Map<String, dynamic> credential =
+          response.toJson();
+
+      final dynamic rawStateId =
+          optionsResult['state_id'];
+
+      final int? stateId =
+          rawStateId is int
+              ? rawStateId
+              : int.tryParse(
+                  rawStateId?.toString() ?? '',
+                );
+
+      if (stateId == null) {
+        throw Exception(
+          'Invalid authentication state.',
+        );
+      }
+
+      final Map<String, dynamic> result =
+          await ApiService.verifyPasskeyLogin(
+        stateId: stateId,
+        credential: credential,
+      );
+
+      return result;
+    } catch (e) {
+      // IMPORTANT:
+      // Any Passkey cancellation/failure is counted.
+      return null;
+    }
+  }
+
+  // ============================================================
+  // NORMAL PASSKEY LOGIN
+  // ============================================================
+
+  Future<void> _startPasskeyLogin() async {
+    final String email =
+        _emailController.text.trim();
+
+    if (email.isEmpty) {
+      setState(() {
+        _errorMessage =
+            'Enter your Gmail address first.';
+      });
+
+      return;
+    }
+
+    if (_passkeyFailures >= maxPasskeyFailures) {
+      setState(() {
+        _errorMessage =
+            'Five Passkey attempts have failed. '
+            'Login password verification is required.';
+      });
+
+      return;
+    }
+
+    setState(() {
+      _isPasskeyLoading = true;
+      _errorMessage = null;
+    });
+
+    final Map<String, dynamic>? result =
+        await _authenticatePasskey();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _isPasskeyLoading = false;
+    });
+
+    // ----------------------------------------------------------
+    // PASSKEY SUCCESS
+    // ----------------------------------------------------------
+
+    if (result != null) {
+      _passkeyFailures = 0;
+
+      await _finishSuccessfulLogin(result);
+
+      return;
+    }
+
+    // ----------------------------------------------------------
+    // PASSKEY FAILURE
+    // ----------------------------------------------------------
+
+    setState(() {
+      _passkeyFailures++;
+
+      if (_passkeyFailures >= maxPasskeyFailures) {
+        _errorMessage =
+            'Five Passkey attempts failed.\n\n'
+            'Your Login Password is now required.';
+      } else {
+        _errorMessage =
+            'Passkey verification failed.\n'
+            'Attempt $_passkeyFailures of '
+            '$maxPasskeyFailures.';
+      }
+    });
+  }
+
+  // ============================================================
+  // VERIFY LOGIN PASSWORD
+  // ============================================================
+
+  Future<bool> _verifyLoginPassword() async {
+    final String email =
+        _emailController.text.trim();
+
+    final String password =
+        _passwordController.text;
+
+    if (email.isEmpty) {
+      setState(() {
+        _errorMessage =
+            'Enter your Gmail address.';
+      });
+
+      return false;
+    }
+
+    if (password.isEmpty) {
+      setState(() {
+        _errorMessage =
+            'Enter your Login Password.';
+      });
+
+      return false;
+    }
+
+    setState(() {
+      _isPasswordLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final Map<String, dynamic> result =
+          await ApiService.login(
+        email,
+        password,
+      );
+
+      if (!mounted) {
+        return false;
+      }
+
+      final bool passkeySet =
+          result['passkey_set'] == true;
+
+      if (!passkeySet) {
+        setState(() {
+          _isPasswordLoading = false;
+
+          _errorMessage =
+              'No Passkey is registered for this account. '
+              'Complete Passkey setup first.';
+        });
+
+        return false;
+      }
+
+      setState(() {
+        _passwordVerified = true;
+        _isPasswordLoading = false;
+        _errorMessage = null;
+      });
+
+      return true;
+    } catch (e) {
+      if (!mounted) {
+        return false;
+      }
+
+      setState(() {
+        _isPasswordLoading = false;
+        _errorMessage = _cleanError(e);
+      });
+
+      return false;
+    }
+  }
+
+  // ============================================================
+  // PHONE PIN / BIOMETRIC
+  // ============================================================
+
+  Future<bool> _verifyPhoneAuthentication() async {
+    setState(() {
+      _isPhoneLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final bool supported =
+          await _localAuth.isDeviceSupported();
+
+      if (!supported) {
+        if (!mounted) {
+          return false;
+        }
+
+        setState(() {
+          _isPhoneLoading = false;
+          _errorMessage =
+              'Phone PIN/biometric authentication '
+              'is not supported on this device.';
+        });
+
+        return false;
+      }
+
+      final bool authenticated =
+          await _localAuth.authenticate(
+        localizedReason:
+            'Verify your phone PIN, pattern, password, '
+            'fingerprint, or face to continue',
+        options: const AuthenticationOptions(
+          biometricOnly: false,
+          stickyAuth: true,
+          useErrorDialogs: true,
+          sensitiveTransaction: true,
+        ),
+      );
+
+      if (!mounted) {
+        return false;
+      }
+
+      if (!authenticated) {
+        setState(() {
+          _isPhoneLoading = false;
+          _errorMessage =
+              'Phone authentication failed.';
+        });
+
+        return false;
+      }
+
+      setState(() {
+        _phoneAuthenticationVerified = true;
+        _isPhoneLoading = false;
+        _errorMessage = null;
+      });
+
+      return true;
+    } catch (e) {
+      if (!mounted) {
+        return false;
+      }
+
+      setState(() {
+        _isPhoneLoading = false;
+        _errorMessage =
+            'Phone authentication failed: '
+            '${_cleanError(e)}';
+      });
+
+      return false;
+    }
+  }
+
+  // ============================================================
+  // FALLBACK AUTHENTICATION
+  // ============================================================
+
+  Future<void> _startFallbackAuthentication() async {
+    // ----------------------------------------------------------
+    // STEP 1 - LOGIN PASSWORD
+    // ----------------------------------------------------------
+
+    if (!_passwordVerified) {
+      final bool passwordSuccess =
+          await _verifyLoginPassword();
+
+      if (!passwordSuccess || !mounted) {
+        return;
+      }
+    }
+
+    // ----------------------------------------------------------
+    // STEP 2 - PHONE PIN / BIOMETRIC
+    // ----------------------------------------------------------
+
+    if (!_phoneAuthenticationVerified) {
+      final bool phoneSuccess =
+          await _verifyPhoneAuthentication();
+
+      if (!phoneSuccess || !mounted) {
+        return;
+      }
+    }
+
+    // ----------------------------------------------------------
+    // STEP 3 - FINAL PASSKEY
+    // ----------------------------------------------------------
+
+    setState(() {
+      _isPasskeyLoading = true;
+      _errorMessage = null;
+    });
+
+    final Map<String, dynamic>? result =
+        await _authenticatePasskey();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _isPasskeyLoading = false;
+    });
+
+    if (result == null) {
+      setState(() {
+        _errorMessage =
+            'Final Passkey verification failed.\n'
+            'Please try again.';
+      });
+
+      return;
+    }
+
+    await _finishSuccessfulLogin(result);
+  }
+
+  // ============================================================
+  // COMPLETE LOGIN
+  // ============================================================
+
+  Future<void> _finishSuccessfulLogin(
+    Map<String, dynamic> result,
+  ) async {
+    if (!mounted) {
+      return;
+    }
+
+    final dynamic rawUserId =
+        result['user_id'];
+
+    final int? userId =
+        rawUserId is int
+            ? rawUserId
+            : int.tryParse(
+                rawUserId?.toString() ?? '',
+              );
+
+    if (userId == null) {
+      setState(() {
+        _errorMessage =
+            'Invalid user information received '
+            'from server.';
+      });
+
+      return;
+    }
+
+    final String userName =
+        (result['name'] ?? 'User').toString();
+
+    final String userEmail =
+        (result['email'] ??
+                _emailController.text.trim())
+            .toString();
+
+    final bool paymentPinSet =
+        result['payment_pin_set'] == true;
+
+    // ----------------------------------------------------------
+    // PAYMENT PIN MUST ALREADY EXIST
+    // ----------------------------------------------------------
+
+    if (!paymentPinSet) {
+      setState(() {
+        _errorMessage =
+            'Payment PIN is not configured for this account. '
+            'Please complete Payment PIN setup first.';
+      });
+
+      return;
+    }
+
+    // ----------------------------------------------------------
+    // OPEN HOME
+    // ----------------------------------------------------------
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HomeScreen(
+          userId: userId,
+          userName: userName,
+          userEmail: userEmail,
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // RESET FALLBACK AUTHENTICATION
+  // ============================================================
+
+  void _resetAuthentication() {
+    setState(() {
+      _passkeyFailures = 0;
+
+      _passwordVerified = false;
+
+      _phoneAuthenticationVerified = false;
+
+      _passwordController.clear();
+
+      _errorMessage = null;
+    });
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
-    final bool busy = _isLoading || _isPasskeyLoading;
+    final bool fallbackRequired =
+        _passkeyFailures >= maxPasskeyFailures;
+
+    final bool busy =
+        _isPasskeyLoading ||
+        _isPasswordLoading ||
+        _isPhoneLoading;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('QuantumPay'),
+        centerTitle: true,
+      ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
+
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.stretch,
+
             children: [
-              const SizedBox(height: 45),
+              const SizedBox(height: 25),
 
-              Center(
-                child: Column(
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary,
-                        borderRadius:
-                            BorderRadius.circular(22),
-                      ),
-                      child: const Icon(
-                        Icons.account_balance_wallet,
-                        color: Colors.white,
-                        size: 42,
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    const Text(
-                      'QuantumPay',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Secure digital payments',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // ==================================================
+              // LOGO
+              // ==================================================
 
-              const SizedBox(height: 45),
-
-              const Text(
-                'Welcome Back',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Login to continue to your QuantumPay account.',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
-              ),
-
-              const SizedBox(height: 28),
-
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'Enter your email',
-                  prefixIcon: Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(),
-                ),
+              const Icon(
+                Icons.account_balance_wallet,
+                size: 70,
               ),
 
               const SizedBox(height: 18),
 
-              TextField(
-                controller: _passwordController,
-                obscureText: _obscurePassword,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) {
-                  if (!busy) {
-                    _login();
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Login Password',
-                  hintText: 'Enter your password',
-                  prefixIcon:
-                      const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword =
-                            !_obscurePassword;
-                      });
-                    },
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                  ),
-                  border: const OutlineInputBorder(),
+              const Text(
+                'Welcome to QuantumPay',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 27,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
 
-              if (_errorMessage != null) ...[
-                const SizedBox(height: 14),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        color: Colors.red,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _errorMessage!,
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              const SizedBox(height: 8),
+
+              const Text(
+                'Secure digital payments',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey,
                 ),
-              ],
+              ),
+
+              const SizedBox(height: 35),
+
+              // ==================================================
+              // EMAIL
+              // ==================================================
+
+              TextField(
+                controller: _emailController,
+                enabled: !busy,
+                keyboardType:
+                    TextInputType.emailAddress,
+                textInputAction:
+                    TextInputAction.next,
+                decoration:
+                    const InputDecoration(
+                  labelText: 'Gmail',
+                  hintText:
+                      'example@gmail.com',
+                  prefixIcon:
+                      Icon(Icons.email_outlined),
+                  border:
+                      OutlineInputBorder(),
+                ),
+              ),
 
               const SizedBox(height: 25),
 
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: busy ? null : _login,
-                  child: _isLoading
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text(
-                          'Login',
+              // ==================================================
+              // NORMAL PASSKEY LOGIN
+              // ==================================================
+
+              if (!fallbackRequired)
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 54,
+                      child:
+                          ElevatedButton.icon(
+                        onPressed:
+                            busy
+                                ? null
+                                : _startPasskeyLogin,
+                        icon:
+                            _isPasskeyLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child:
+                                        CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.fingerprint,
+                                  ),
+                        label:
+                            const Text(
+                          'Use Passkey',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight:
+                                FontWeight.bold,
                           ),
                         ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    if (_passkeyFailures > 0)
+                      Text(
+                        'Passkey attempts: '
+                        '$_passkeyFailures / '
+                        '$maxPasskeyFailures',
+                        textAlign:
+                            TextAlign.center,
+                        style:
+                            const TextStyle(
+                          color:
+                              Colors.orange,
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+                      ),
+                  ],
                 ),
-              ),
 
-              const SizedBox(height: 15),
+              // ==================================================
+              // FALLBACK AUTHENTICATION
+              // ==================================================
 
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: OutlinedButton.icon(
-                  onPressed:
-                      busy ? null : _passkeyLogin,
-                  icon: _isPasskeyLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+              if (fallbackRequired)
+                Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.stretch,
+
+                  children: [
+                    Container(
+                      padding:
+                          const EdgeInsets.all(16),
+
+                      decoration:
+                          BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(12),
+
+                        color:
+                            Colors.orange.withValues(
+                          alpha: 0.12,
+                        ),
+                      ),
+
+                      child: const Column(
+                        children: [
+                          Icon(
+                            Icons.security,
+                            size: 40,
                           ),
-                        )
-                      : const Icon(Icons.fingerprint),
-                  label: const Text(
-                    'Use Passkey',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+
+                          SizedBox(height: 8),
+
+                          Text(
+                            'Additional verification required',
+                            textAlign:
+                                TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight:
+                                  FontWeight.bold,
+                            ),
+                          ),
+
+                          SizedBox(height: 6),
+
+                          Text(
+                            'Five Passkey attempts failed. '
+                            'Complete the three verification steps.',
+                            textAlign:
+                                TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 25),
+
+                    // ==================================================
+                    // STEP 1
+                    // ==================================================
+
+                    const Text(
+                      '1. Login Password',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 7),
+
+                    const Text(
+                      'Enter the Login Password that you '
+                      'created during account registration.',
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller:
+                          _passwordController,
+
+                      enabled:
+                          !_passwordVerified &&
+                          !_isPasswordLoading,
+
+                      obscureText:
+                          _obscurePassword,
+
+                      textInputAction:
+                          TextInputAction.done,
+
+                      decoration:
+                          InputDecoration(
+                        labelText:
+                            'Login Password',
+
+                        hintText:
+                            'Enter your Login Password',
+
+                        prefixIcon:
+                            const Icon(
+                          Icons.lock_outline,
+                        ),
+
+                        suffixIcon:
+                            IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword =
+                                  !_obscurePassword;
+                            });
+                          },
+                          icon:
+                              Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
+
+                        border:
+                            const OutlineInputBorder(),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    if (!_passwordVerified)
+                      SizedBox(
+                        height: 50,
+                        child:
+                            ElevatedButton(
+                          onPressed:
+                              _isPasswordLoading
+                                  ? null
+                                  : _verifyLoginPassword,
+
+                          child:
+                              _isPasswordLoading
+                                  ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child:
+                                          CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Verify Login Password',
+                                    ),
+                        ),
+                      ),
+
+                    if (_passwordVerified)
+                      const ListTile(
+                        contentPadding:
+                            EdgeInsets.zero,
+
+                        leading:
+                            Icon(
+                          Icons.check_circle,
+                          color:
+                              Colors.green,
+                        ),
+
+                        title:
+                            Text(
+                          'Login Password verified',
+                        ),
+                      ),
+
+                    const SizedBox(height: 25),
+
+                    // ==================================================
+                    // STEP 2
+                    // ==================================================
+
+                    const Text(
+                      '2. Phone PIN / Biometric',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 7),
+
+                    const Text(
+                      'Verify using your Android phone PIN, '
+                      'pattern, password, fingerprint, or face.',
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    if (!_phoneAuthenticationVerified)
+                      SizedBox(
+                        height: 50,
+                        child:
+                            ElevatedButton.icon(
+                          onPressed:
+                              !_passwordVerified ||
+                                      _isPhoneLoading
+                                  ? null
+                                  : _verifyPhoneAuthentication,
+
+                          icon:
+                              const Icon(
+                            Icons.phone_android,
+                          ),
+
+                          label:
+                              _isPhoneLoading
+                                  ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child:
+                                          CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Verify Phone PIN / Biometric',
+                                    ),
+                        ),
+                      ),
+
+                    if (_phoneAuthenticationVerified)
+                      const ListTile(
+                        contentPadding:
+                            EdgeInsets.zero,
+
+                        leading:
+                            Icon(
+                          Icons.check_circle,
+                          color:
+                              Colors.green,
+                        ),
+
+                        title:
+                            Text(
+                          'Phone authentication verified',
+                        ),
+                      ),
+
+                    const SizedBox(height: 25),
+
+                    // ==================================================
+                    // STEP 3
+                    // ==================================================
+
+                    const Text(
+                      '3. Final Passkey',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 7),
+
+                    const Text(
+                      'Complete the final Passkey verification '
+                      'to enter QuantumPay.',
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    SizedBox(
+                      height: 50,
+                      child:
+                          ElevatedButton.icon(
+                        onPressed:
+                            !_passwordVerified ||
+                                    !_phoneAuthenticationVerified ||
+                                    _isPasskeyLoading
+                                ? null
+                                : _startFallbackAuthentication,
+
+                        icon:
+                            const Icon(
+                          Icons.fingerprint,
+                        ),
+
+                        label:
+                            _isPasskeyLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child:
+                                        CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Verify Final Passkey',
+                                  ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    OutlinedButton(
+                      onPressed:
+                          busy
+                              ? null
+                              : _resetAuthentication,
+
+                      child:
+                          const Text(
+                        'Reset Authentication',
+                      ),
+                    ),
+                  ],
+                ),
+
+              // ==================================================
+              // ERROR MESSAGE
+              // ==================================================
+
+              if (_errorMessage != null)
+                Container(
+                  margin:
+                      const EdgeInsets.only(
+                    top: 20,
+                  ),
+
+                  padding:
+                      const EdgeInsets.all(13),
+
+                  decoration:
+                      BoxDecoration(
+                    borderRadius:
+                        BorderRadius.circular(10),
+
+                    color:
+                        Colors.red.withValues(
+                      alpha: 0.10,
+                    ),
+                  ),
+
+                  child:
+                      Text(
+                    _errorMessage!,
+                    textAlign:
+                        TextAlign.center,
+
+                    style:
+                        const TextStyle(
+                      color:
+                          Colors.red,
                     ),
                   ),
                 ),
-              ),
 
               const SizedBox(height: 25),
 
-              Center(
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    const Text("Don't have an account? "),
-                    TextButton(
-                      onPressed: busy
+              // ==================================================
+              // REGISTER
+              // ==================================================
+
+              if (!fallbackRequired)
+                TextButton(
+                  onPressed:
+                      busy
                           ? null
                           : () {
                               Navigator.push(
@@ -472,37 +1084,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                             },
-                      child: const Text('Register'),
-                    ),
-                  ],
+
+                  child:
+                      const Text(
+                    'Create a new QuantumPay account',
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: 20),
-
-              Center(
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: const [
-                    Icon(
-                      Icons.cloud_done,
-                      size: 16,
-                      color: Colors.green,
-                    ),
-                    SizedBox(width: 6),
-                    Text(
-                      'Secure backend login',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 25),
             ],
           ),
         ),

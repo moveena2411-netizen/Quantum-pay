@@ -104,3 +104,194 @@ class PaymentCredential(Base):
         onupdate=datetime.utcnow,
         nullable=False,
     )
+    # =========================================================
+# TRANSACTION INTEGRITY TABLE
+# =========================================================
+
+class TransactionIntegrity(Base):
+
+    __tablename__ = "transaction_integrity"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    transaction_id = Column(
+        Integer,
+        ForeignKey("transactions.id"),
+        unique=True,
+        nullable=False,
+        index=True
+    )
+
+    integrity_hash = Column(
+        String(64),
+        nullable=False
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    # =========================================================
+# TRANSACTION ML-DSA SIGNATURE TABLE
+# =========================================================
+
+class TransactionSignature(Base):
+
+    __tablename__ = "transaction_signatures"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    transaction_id = Column(
+        Integer,
+        ForeignKey("transactions.id"),
+        unique=True,
+        nullable=False,
+        index=True
+    )
+
+    public_key = Column(
+        String(5000),
+        nullable=False
+    )
+
+    signature = Column(
+        String(5000),
+        nullable=False
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    # =========================================================
+# RISK ASSESSMENT TABLE
+# =========================================================
+
+class RiskAssessment(Base):
+
+    __tablename__ = "risk_assessments"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    transaction_id = Column(
+        Integer,
+        ForeignKey("transactions.id"),
+        nullable=True,
+        index=True
+    )
+
+    sender_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True
+    )
+
+    receiver_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True
+    )
+
+    risk_score = Column(
+        Integer,
+        nullable=False,
+        default=0
+    )
+
+    initial_risk = Column(
+        String(20),
+        nullable=False
+    )
+
+    risk_reasons = Column(
+        String(4000),
+        nullable=True
+    )
+
+    challenge_result = Column(
+        String(20),
+        nullable=True
+    )
+
+    final_risk = Column(
+        String(20),
+        nullable=True
+    )
+
+    final_action = Column(
+        String(50),
+        nullable=True
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    # =========================================================
+# PENDING TRANSACTION
+# =========================================================
+
+class PendingTransaction(Base):
+    __tablename__ = "pending_transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    sender_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True
+    )
+
+    receiver_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True
+    )
+
+    amount = Column(
+        Float,
+        nullable=False
+    )
+
+    risk_assessment_id = Column(
+        Integer,
+        ForeignKey("risk_assessments.id"),
+        nullable=True,
+        index=True
+    )
+
+    status = Column(
+        String(30),
+        nullable=False,
+        default="CHALLENGE_PENDING"
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+

@@ -1,0 +1,45 @@
+QUANTUMPAY - SHARE SMS / MESSAGE ANALYZER
+==========================================
+
+Flutter in this project is 3.34.x, so use receive_sharing_intent 1.8.1.
+Do NOT use 1.9.0 because 1.9.0 requires Flutter 3.38+.
+
+1) From frontend:
+
+flutter pub add receive_sharing_intent:^1.8.1
+
+2) Copy:
+
+shared_message_service.dart
+-> frontend/lib/services/shared_message_service.dart
+
+api_service_corrected.dart
+-> frontend/lib/services/api_service.dart
+
+3) Apply home_share_integration.txt to the EXISTING home_screen.dart.
+
+4) In:
+frontend/android/app/src/main/AndroidManifest.xml
+add the SEND text intent-filter from AndroidManifest_SHARE_PATCH.xml
+inside the existing MainActivity activity.
+
+5) Rebuild completely:
+
+flutter clean
+flutter pub get
+flutter run -d 10BD8S2PXS0006G
+
+6) Demo:
+
+SMS app -> select message -> Share -> QuantumPay
+
+Expected:
+
+Shared message
+  -> MessageAnalyzer
+  -> suspicious / normal
+  -> phone number extraction
+  -> SecurityEvidence storage
+  -> result dialog
+
+The optional message typed in Send Money is NOT analyzed by MessageAnalyzer.

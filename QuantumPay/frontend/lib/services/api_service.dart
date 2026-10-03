@@ -3,19 +3,32 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // Physical Android phones use the public HTTPS ngrok backend.
-  static const String baseUrl =
-      'https://squeak-crablike-walnut.ngrok-free.dev';
+  // =========================================================
+  // BACKEND URL
+  // =========================================================
+
+  // Physical Android phone and PC are on the same Wi-Fi network.
+  static const String baseUrl = 'http://192.168.1.3:8000';
+
+  // =========================================================
+  // COMMON RESPONSE PARSER
+  // =========================================================
 
   static Map<String, dynamic> _jsonMap(http.Response response) {
     try {
       final decoded = jsonDecode(response.body);
+
       if (decoded is Map<String, dynamic>) {
         return decoded;
       }
-      return {'detail': 'Unexpected server response'};
+
+      return {
+        'detail': 'Unexpected server response',
+      };
     } catch (_) {
-      return {'detail': 'Invalid server response'};
+      return {
+        'detail': 'Invalid server response',
+      };
     }
   }
 
@@ -29,7 +42,9 @@ class ApiService {
   ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/login'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'email': email,
         'password': password,
@@ -42,7 +57,9 @@ class ApiService {
       return data;
     }
 
-    throw Exception(data['detail'] ?? 'Login failed');
+    throw Exception(
+      data['detail'] ?? 'Login failed',
+    );
   }
 
   // =========================================================
@@ -57,7 +74,9 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/register'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'name': name,
         'email': email,
@@ -72,7 +91,9 @@ class ApiService {
       return data;
     }
 
-    throw Exception(data['detail'] ?? 'Registration failed');
+    throw Exception(
+      data['detail'] ?? 'Registration failed',
+    );
   }
 
   // =========================================================
@@ -86,7 +107,9 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/payment-pin/setup'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'user_id': userId,
         'login_password': loginPassword,
@@ -115,7 +138,9 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/payment-pin/verify'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'user_id': userId,
         'payment_pin': paymentPin,
@@ -143,7 +168,9 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/wallet/balance'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'user_id': userId,
         'payment_pin': paymentPin,
@@ -192,14 +219,86 @@ class ApiService {
     required String receiver,
     required double amount,
     required String paymentPin,
+    String? message,
   }) async {
+    final body = <String, dynamic>{
+      'sender_id': senderId,
+      'receiver': receiver,
+      'amount': amount,
+      'payment_pin': paymentPin,
+
+      // Optional transaction note.
+      // It is NOT analyzed as an incoming security message.
+      'message': message?.trim() ?? '',
+    };
+
     final response = await http.post(
       Uri.parse('$baseUrl/wallet/send'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body),
+    );
+
+    final data = _jsonMap(response);
+
+    // HTTP 200 is also used by the backend for
+    // CHALLENGE_REQUIRED.
+    //
+    // The caller must inspect:
+    // data['status']
+    //
+    // before showing transaction success.
+    if (response.statusCode == 200) {
+      return data;
+    }
+
+    throw Exception(
+      data['detail'] ?? 'Money transfer failed',
+    );
+  }
+
+  // =========================================================
+  // CHALLENGE QUESTIONS
+  // =========================================================
+
+  static Future<List<dynamic>> getChallengeQuestions() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/risk/challenge/questions'),
+    );
+
+    final data = _jsonMap(response);
+
+    if (response.statusCode == 200) {
+      final questions = data['questions'];
+
+      if (questions is List<dynamic>) {
+        return questions;
+      }
+    }
+
+    throw Exception(
+      data['detail'] ?? 'Unable to load security challenge',
+    );
+  }
+
+  // =========================================================
+  // COMPLETE HIGH-RISK CHALLENGE
+  // =========================================================
+
+  static Future<Map<String, dynamic>> completeChallenge({
+    required int pendingTransactionId,
+    required Map<String, bool> answers,
+    required String paymentPin,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/wallet/challenge/complete'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
-        'sender_id': senderId,
-        'receiver': receiver,
-        'amount': amount,
+        'pending_transaction_id': pendingTransactionId,
+        'answers': answers,
         'payment_pin': paymentPin,
       }),
     );
@@ -211,7 +310,7 @@ class ApiService {
     }
 
     throw Exception(
-      data['detail'] ?? 'Money transfer failed',
+      data['detail'] ?? 'Security challenge failed',
     );
   }
 
@@ -225,7 +324,9 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/wallet/receive'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'user_id': userId,
         'amount': amount,
@@ -256,12 +357,14 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body);
+
       if (decoded is List<dynamic>) {
         return decoded;
       }
     }
 
     final data = _jsonMap(response);
+
     throw Exception(
       data['detail'] ?? 'Unable to get transactions',
     );
@@ -278,7 +381,9 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/passkey/register/options'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'user_id': userId,
         'password': password,
@@ -307,7 +412,9 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/passkey/register/verify'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'state_id': stateId,
         'credential': credential,
@@ -329,12 +436,15 @@ class ApiService {
   // PASSKEY LOGIN OPTIONS
   // =========================================================
 
-  static Future<Map<String, dynamic>> getPasskeyLoginOptions({
+  static Future<Map<String, dynamic>>
+      getPasskeyLoginOptions({
     required String email,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/passkey/login/options'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'email': email,
       }),
@@ -361,7 +471,9 @@ class ApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/passkey/login/verify'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode({
         'state_id': stateId,
         'credential': credential,

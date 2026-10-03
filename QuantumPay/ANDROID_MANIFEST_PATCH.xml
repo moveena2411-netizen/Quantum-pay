@@ -1,0 +1,25 @@
+ANDROID MANIFEST PATCH
+======================
+
+Open:
+android/app/src/main/AndroidManifest.xml
+
+Do NOT replace the complete manifest.
+Find the existing .MainActivity <activity> element and make it contain:
+
+<activity
+    android:name=".MainActivity"
+    android:exported="true"
+    android:launchMode="singleTask"
+    ...>
+
+Keep all your existing attributes and children.
+Inside that SAME activity, add this intent filter:
+
+<intent-filter>
+    <action android:name="android.intent.action.SEND" />
+    <category android:name="android.intent.category.DEFAULT" />
+    <data android:mimeType="text/*" />
+</intent-filter>
+
+Do not create a second MainActivity.
